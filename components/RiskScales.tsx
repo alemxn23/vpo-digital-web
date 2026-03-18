@@ -30,12 +30,6 @@ const ScaleCard = ({ label, desc, children, autoCalc = false, onClick, isAuthori
             <span className="text-[10px] text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full whitespace-nowrap select-none font-medium">{desc}</span>
         </div>
         {children}
-        {/* Hint for interactivity */}
-        {onClick && (
-            <div className="absolute bottom-2 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
-                <span className="text-[10px] font-semibold text-cyan-600 flex items-center gap-1 select-none bg-cyan-50 px-2 py-1 rounded-full"><Search size={10} strokeWidth={1.5} /> Desglose</span>
-            </div>
-        )}
     </div>
 );
 
@@ -1272,351 +1266,346 @@ const RiskScales: React.FC = () => {
                     <p className="text-[11px] text-slate-400 font-medium">Cálculo automático de riesgo preoperatorio</p>
                 </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-8">
+            {/* ── Main Form Card ── */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 md:p-6 overflow-hidden">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-2">
 
-                {/* SECTION: GENERAL & SPECIALTY */}
-                <div className="col-span-full flex items-center gap-2 mt-1 mb-0.5 px-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
-                    <span className="text-[12px] font-semibold text-slate-500">Escalas Generales</span>
-                </div>
-
-                {/* ASA - Full Width */}
-                <ScaleCard
-                    label="ASA"
-                    desc="Estado Físico"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('asa')}
-                    isAuthorized={authorized['asa'] === true}
-                    onToggleAuth={(e) => toggleAuth('asa', e)}
-                >
-                    <div className="relative">
-                        <div className="w-full p-2.5 bg-slate-50 border border-slate-200/60 rounded-xl text-center">
-                            <span className="text-2xl font-bold text-slate-800 leading-none tabular-nums">{watch('asa')}</span>
-                        </div>
+                    {/* SECTION: GENERAL & SPECIALTY */}
+                    <div className="col-span-full flex items-center gap-2 mt-1 mb-0.5 px-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+                        <span className="text-[12px] font-semibold text-slate-500">Escalas Generales</span>
                     </div>
-                </ScaleCard>
 
-                {/* CAPRINI - Full Width */}
-                <ScaleCard
-                    label="CAPRINI"
-                    desc="Riesgo Trombótico"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('caprini')}
-                    isAuthorized={authorized['caprini'] === true}
-                    onToggleAuth={(e) => toggleAuth('caprini', e)}
-                >
-                    <div className="flex items-center justify-between mb-2.5">
-                        <div className="flex items-center gap-3">
-                            <div className="w-14 p-2 bg-slate-50 border border-slate-200/60 rounded-xl text-center font-bold text-lg text-slate-800 tabular-nums">
-                                {watch('caprini')}
-                            </div>
-                            <div>
-                                <span className="text-[10px] text-slate-400 block font-medium">Puntos totales</span>
-                                <span className={`text-[12px] font-semibold ${watch('caprini') >= 5 ? 'text-red-600' : watch('caprini') >= 3 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                                    {watch('caprini') >= 5 ? 'Alto Riesgo' : watch('caprini') >= 3 ? 'Moderado' : 'Bajo'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setSelectedScale('caprini'); }}
-                        className="relative z-20 w-full py-1.5 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-cyan-50 hover:border-cyan-300/50 hover:text-cyan-700 text-[11px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-all duration-200"
+                    {/* ASA - Full Width */}
+                    <ScaleCard
+                        label="ASA"
+                        desc="Estado Físico"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('asa')}
+                        isAuthorized={authorized['asa'] === true}
+                        onToggleAuth={(e) => toggleAuth('asa', e)}
                     >
-                        <AlertCircle size={12} strokeWidth={1.5} />
-                        Abrir Checklist Completo
-                    </button>
-                </ScaleCard>
+                        <div className="relative">
+                            <div className="w-full p-2.5 bg-slate-50 border border-slate-200/60 rounded-xl text-center">
+                                <span className="text-2xl font-bold text-slate-800 leading-none tabular-nums">{watch('asa')}</span>
+                            </div>
+                        </div>
+                    </ScaleCard>
 
-                {/* FRAGILIDAD */}
-                <ScaleCard
-                    label="Fragilidad"
-                    desc="CFS (1-9)"
-                    autoCalc={false}
-                    onClick={() => setSelectedScale('fragilidad')}
-                    isAuthorized={authorized['fragilidad'] === true}
-                    onToggleAuth={(e) => toggleAuth('fragilidad', e)}
-                >
-                    <div className="px-1 py-1">
-                        <input
-                            type="range" min="1" max="9" step="1"
-                            value={watch('fragilidad_score') || 1}
-                            onChange={(e) => setValue('fragilidad_score', parseInt(e.target.value))}
-                            className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-600"
-                        />
-                        <div className="flex justify-between items-center mt-2">
-                            <span className="text-lg font-bold text-slate-800 tabular-nums">{watch('fragilidad_score') || 1}</span>
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full leading-none
+                    {/* CAPRINI - Full Width */}
+                    <ScaleCard
+                        label="CAPRINI"
+                        desc="Riesgo Trombótico"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('caprini')}
+                        isAuthorized={authorized['caprini'] === true}
+                        onToggleAuth={(e) => toggleAuth('caprini', e)}
+                    >
+                        <div className="flex items-center justify-between mb-2.5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-14 p-2 bg-slate-50 border border-slate-200/60 rounded-xl text-center font-bold text-lg text-slate-800 tabular-nums">
+                                    {watch('caprini')}
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-slate-400 block font-medium">Puntos totales</span>
+                                    <span className={`text-[12px] font-semibold ${watch('caprini') >= 5 ? 'text-red-600' : watch('caprini') >= 3 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                                        {watch('caprini') >= 5 ? 'Alto Riesgo' : watch('caprini') >= 3 ? 'Moderado' : 'Bajo'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </ScaleCard>
+
+                    {/* FRAGILIDAD */}
+                    <ScaleCard
+                        label="Fragilidad"
+                        desc="CFS (1-9)"
+                        autoCalc={false}
+                        onClick={() => setSelectedScale('fragilidad')}
+                        isAuthorized={authorized['fragilidad'] === true}
+                        onToggleAuth={(e) => toggleAuth('fragilidad', e)}
+                    >
+                        <div className="px-1 py-1">
+                            <input
+                                type="range" min="1" max="9" step="1"
+                                value={watch('fragilidad_score') || 1}
+                                onChange={(e) => setValue('fragilidad_score', parseInt(e.target.value))}
+                                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-600"
+                            />
+                            <div className="flex justify-between items-center mt-2">
+                                <span className="text-lg font-bold text-slate-800 tabular-nums">{watch('fragilidad_score') || 1}</span>
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full leading-none
                                              ${(watch('fragilidad_score') || 1) <= 3 ? 'bg-emerald-100 text-emerald-700' :
-                                    (watch('fragilidad_score') || 1) <= 6 ? 'bg-amber-100 text-amber-700' :
-                                        'bg-red-100 text-red-700'}`}>
-                                {(watch('fragilidad_score') || 1) <= 3 ? 'Robusto' :
-                                    (watch('fragilidad_score') || 1) <= 6 ? 'Vulnerable' :
-                                        'Frágil'}
-                            </span>
-                        </div>
-                    </div>
-                </ScaleCard>
-
-                {/* METS */}
-                <ScaleCard
-                    label="METs"
-                    desc="Capacidad"
-                    autoCalc={data.mets_method !== 'manual'}
-                    onClick={() => setSelectedScale('mets')}
-                    isAuthorized={authorized['mets'] === true}
-                    onToggleAuth={(e) => toggleAuth('mets', e)}
-                >
-                    <div className="text-center">
-                        <div className="bg-slate-50 border border-slate-200/60 text-xl font-bold rounded-xl py-1.5 px-2 text-slate-800 mb-2 tabular-nums">
-                            {watch('mets_estimated') || 4}
-                        </div>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full
-                                         ${(watch('mets_estimated') || 4) >= 10 ? 'bg-emerald-100 text-emerald-700' :
-                                (watch('mets_estimated') || 4) >= 4 ? 'bg-amber-100 text-amber-700' :
-                                    'bg-red-100 text-red-700'}`}>
-                            {(watch('mets_estimated') || 4) >= 10 ? 'Excelente' :
-                                (watch('mets_estimated') || 4) >= 4 ? 'Moderada' :
-                                    'Mala (<4)'}
-                        </span>
-                    </div>
-                </ScaleCard>
-
-                {/* SECTION: CARDIOVASCULAR */}
-                <div className="col-span-full flex items-center gap-2 mt-4 mb-0.5 px-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                    <span className="text-[12px] font-semibold text-slate-500">Riesgo Cardiovascular</span>
-                </div>
-
-                {/* LEE (RCRI) */}
-                <ScaleCard
-                    label="LEE (RCRI)"
-                    desc="Riesgo CV"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('lee')}
-                    isAuthorized={authorized['lee'] === true}
-                    onToggleAuth={(e) => toggleAuth('lee', e)}
-                >
-                    <div className="text-center">
-                        <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('lee')}</span>
-                        <p className="text-[10px] text-slate-400 font-medium">Clase I-IV</p>
-                    </div>
-                </ScaleCard>
-
-                {/* GOLDMAN */}
-                <ScaleCard
-                    label="GOLDMAN"
-                    desc="Original '77"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('goldman')}
-                    isAuthorized={authorized['goldman'] === true}
-                    onToggleAuth={(e) => toggleAuth('goldman', e)}
-                >
-                    <div className="text-center">
-                        <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('goldman')}</span>
-                        <p className="text-[10px] text-slate-400 font-medium">Clase I-IV</p>
-                    </div>
-                </ScaleCard>
-
-                {/* DETSKY */}
-                <ScaleCard
-                    label="DETSKY"
-                    desc="Modificado"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('detsky')}
-                    isAuthorized={authorized['detsky'] === true}
-                    onToggleAuth={(e) => toggleAuth('detsky', e)}
-                >
-                    <div className="text-center">
-                        <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('detsky')}</span>
-                        <p className="text-[10px] text-slate-400 font-medium">Clase I-III</p>
-                    </div>
-                </ScaleCard>
-
-                {/* GUPTA */}
-                <ScaleCard
-                    label="GUPTA"
-                    desc="MICA-IAM"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('gupta')}
-                    isAuthorized={authorized['gupta'] === true}
-                    onToggleAuth={(e) => toggleAuth('gupta', e)}
-                >
-                    <div className="text-center flex flex-col items-center justify-center">
-                        <span className={`text-xl font-bold tabular-nums ${(watch('gupta') || 0) > 1 ? 'text-red-600' : 'text-slate-800'}`}>
-                            {watch('gupta') || 0}%
-                        </span>
-                        <p className="text-[10px] text-slate-400 font-medium">IAM/Paro 30d</p>
-                    </div>
-                </ScaleCard>
-
-                {/* NSQIP */}
-                <ScaleCard
-                    label="NSQIP"
-                    desc="Compl. Mayores"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('nsqip')}
-                    isAuthorized={authorized['nsqip'] === true}
-                    onToggleAuth={(e) => toggleAuth('nsqip', e)}
-                >
-                    <div className="text-center flex flex-col items-center justify-center">
-                        <span className={`text-xl font-bold tabular-nums ${(watch('nsqip_total') || 0) >= 10 ? 'text-red-600' :
-                            (watch('nsqip_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-800'
-                            }`}>
-                            {watch('nsqip_total') || 0}%
-                        </span>
-                        <p className={`text-[10px] font-semibold ${(watch('nsqip_total') || 0) >= 10 ? 'text-red-600' :
-                            (watch('nsqip_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-400'
-                            }`}>
-                            {watch('nsqip_riesgo') || 'Bajo'}
-                        </p>
-                    </div>
-                </ScaleCard>
-
-                {/* DUKE */}
-                <ScaleCard
-                    label="DUKE"
-                    desc="Endocarditis"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('duke')}
-                    isAuthorized={authorized['duke'] === true}
-                    onToggleAuth={(e) => toggleAuth('duke', e)}
-                >
-                    <div className="text-center flex flex-col items-center justify-center">
-                        <span className={`text-[12px] font-semibold ${watch('duke_resultado') === 'Definitivo' ? 'text-red-600 animate-pulse' :
-                            watch('duke_resultado') === 'Posible' ? 'text-amber-600' : 'text-slate-600'
-                            }`}>
-                            {watch('duke_resultado') || 'Rechazado'}
-                        </span>
-                        <p className="text-[10px] text-slate-400 font-medium">Criterios</p>
-                    </div>
-                </ScaleCard>
-
-                {/* CHA2DS2-VASc */}
-                <ScaleCard
-                    label="CHA₂DS₂-VASc"
-                    desc="ECV FA"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('cha2ds2vasc')}
-                    isAuthorized={authorized['cha2ds2vasc'] === true}
-                    onToggleAuth={(e) => toggleAuth('cha2ds2vasc', e)}
-                >
-                    <div className="text-center">
-                        <span className={`text-xl font-bold tabular-nums ${(watch('cha2ds2vasc') || 0) >= 2 ? 'text-red-600' : 'text-slate-800'}`}>
-                            {watch('cha2ds2vasc') || 0}
-                        </span>
-                        <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
-                    </div>
-                </ScaleCard>
-
-                {/* VRC Score (Conditional) */}
-                {(watch('gupta_surgical_site') === 'vascular' || watch('gupta_surgical_site') === 'aortic' || watch('gupta_surgical_site') === 'amputation') && (
-                    <ScaleCard
-                        label="VRC Score"
-                        desc="VSGNE Vasc"
-                        autoCalc={true}
-                        onClick={() => setSelectedScale('vrc')}
-                        isAuthorized={authorized['vrc'] === true}
-                        onToggleAuth={(e) => toggleAuth('vrc', e)}
-                    >
-                        <div className="text-center flex items-center justify-center gap-4">
-                            <div>
-                                <span className={`text-xl font-bold tabular-nums ${(watch('vrc_total') || 0) >= 4 ? 'text-red-600' : 'text-slate-800'}`}>
-                                    {watch('vrc_total') !== -1 ? watch('vrc_total') : '-'}
+                                        (watch('fragilidad_score') || 1) <= 6 ? 'bg-amber-100 text-amber-700' :
+                                            'bg-red-100 text-red-700'}`}>
+                                    {(watch('fragilidad_score') || 1) <= 3 ? 'Robusto' :
+                                        (watch('fragilidad_score') || 1) <= 6 ? 'Vulnerable' :
+                                            'Frágil'}
                                 </span>
-                                <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
                             </div>
-                            <div className="h-8 w-px bg-slate-200/60" />
-                            <p className={`text-[12px] font-semibold ${(watch('vrc_total') || 0) >= 4 ? 'text-red-600' : 'text-emerald-600'}`}>
-                                {watch('vrc_riesgo') || 'Bajo'}
+                        </div>
+                    </ScaleCard>
+
+                    {/* METS */}
+                    <ScaleCard
+                        label="METs"
+                        desc="Capacidad"
+                        autoCalc={data.mets_method !== 'manual'}
+                        onClick={() => setSelectedScale('mets')}
+                        isAuthorized={authorized['mets'] === true}
+                        onToggleAuth={(e) => toggleAuth('mets', e)}
+                    >
+                        <div className="text-center">
+                            <div className="bg-slate-50 border border-slate-200/60 text-xl font-bold rounded-xl py-1.5 px-2 text-slate-800 mb-2 tabular-nums">
+                                {watch('mets_estimated') || 4}
+                            </div>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full
+                                         ${(watch('mets_estimated') || 4) >= 10 ? 'bg-emerald-100 text-emerald-700' :
+                                    (watch('mets_estimated') || 4) >= 4 ? 'bg-amber-100 text-amber-700' :
+                                        'bg-red-100 text-red-700'}`}>
+                                {(watch('mets_estimated') || 4) >= 10 ? 'Excelente' :
+                                    (watch('mets_estimated') || 4) >= 4 ? 'Moderada' :
+                                        'Mala (<4)'}
+                            </span>
+                        </div>
+                    </ScaleCard>
+
+                    {/* SECTION: CARDIOVASCULAR */}
+                    <div className="col-span-full flex items-center gap-2 mt-4 mb-0.5 px-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                        <span className="text-[12px] font-semibold text-slate-500">Riesgo Cardiovascular</span>
+                    </div>
+
+                    {/* LEE (RCRI) */}
+                    <ScaleCard
+                        label="LEE (RCRI)"
+                        desc="Riesgo CV"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('lee')}
+                        isAuthorized={authorized['lee'] === true}
+                        onToggleAuth={(e) => toggleAuth('lee', e)}
+                    >
+                        <div className="text-center">
+                            <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('lee')}</span>
+                            <p className="text-[10px] text-slate-400 font-medium">Clase I-IV</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* GOLDMAN */}
+                    <ScaleCard
+                        label="GOLDMAN"
+                        desc="Original '77"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('goldman')}
+                        isAuthorized={authorized['goldman'] === true}
+                        onToggleAuth={(e) => toggleAuth('goldman', e)}
+                    >
+                        <div className="text-center">
+                            <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('goldman')}</span>
+                            <p className="text-[10px] text-slate-400 font-medium">Clase I-IV</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* DETSKY */}
+                    <ScaleCard
+                        label="DETSKY"
+                        desc="Modificado"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('detsky')}
+                        isAuthorized={authorized['detsky'] === true}
+                        onToggleAuth={(e) => toggleAuth('detsky', e)}
+                    >
+                        <div className="text-center">
+                            <span className="text-2xl font-bold text-slate-800 tabular-nums">{watch('detsky')}</span>
+                            <p className="text-[10px] text-slate-400 font-medium">Clase I-III</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* GUPTA */}
+                    <ScaleCard
+                        label="GUPTA"
+                        desc="MICA-IAM"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('gupta')}
+                        isAuthorized={authorized['gupta'] === true}
+                        onToggleAuth={(e) => toggleAuth('gupta', e)}
+                    >
+                        <div className="text-center flex flex-col items-center justify-center">
+                            <span className={`text-xl font-bold tabular-nums ${(watch('gupta') || 0) > 1 ? 'text-red-600' : 'text-slate-800'}`}>
+                                {watch('gupta') || 0}%
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-medium">IAM/Paro 30d</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* NSQIP */}
+                    <ScaleCard
+                        label="NSQIP"
+                        desc="Compl. Mayores"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('nsqip')}
+                        isAuthorized={authorized['nsqip'] === true}
+                        onToggleAuth={(e) => toggleAuth('nsqip', e)}
+                    >
+                        <div className="text-center flex flex-col items-center justify-center">
+                            <span className={`text-xl font-bold tabular-nums ${(watch('nsqip_total') || 0) >= 10 ? 'text-red-600' :
+                                (watch('nsqip_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-800'
+                                }`}>
+                                {watch('nsqip_total') || 0}%
+                            </span>
+                            <p className={`text-[10px] font-semibold ${(watch('nsqip_total') || 0) >= 10 ? 'text-red-600' :
+                                (watch('nsqip_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-400'
+                                }`}>
+                                {watch('nsqip_riesgo') || 'Bajo'}
                             </p>
                         </div>
                     </ScaleCard>
-                )}
 
-                {/* SECTION: MULTISYSTEM & ONCO */}
-                <div className="col-span-full flex items-center gap-2 mt-4 mb-0.5 px-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-                    <span className="text-[12px] font-semibold text-slate-500">Otras Escalas</span>
+                    {/* DUKE */}
+                    <ScaleCard
+                        label="DUKE"
+                        desc="Endocarditis"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('duke')}
+                        isAuthorized={authorized['duke'] === true}
+                        onToggleAuth={(e) => toggleAuth('duke', e)}
+                    >
+                        <div className="text-center flex flex-col items-center justify-center">
+                            <span className={`text-[12px] font-semibold ${watch('duke_resultado') === 'Definitivo' ? 'text-red-600 animate-pulse' :
+                                watch('duke_resultado') === 'Posible' ? 'text-amber-600' : 'text-slate-600'
+                                }`}>
+                                {watch('duke_resultado') || 'Rechazado'}
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-medium">Criterios</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* CHA2DS2-VASc */}
+                    <ScaleCard
+                        label="CHA₂DS₂-VASc"
+                        desc="ECV FA"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('cha2ds2vasc')}
+                        isAuthorized={authorized['cha2ds2vasc'] === true}
+                        onToggleAuth={(e) => toggleAuth('cha2ds2vasc', e)}
+                    >
+                        <div className="text-center">
+                            <span className={`text-xl font-bold tabular-nums ${(watch('cha2ds2vasc') || 0) >= 2 ? 'text-red-600' : 'text-slate-800'}`}>
+                                {watch('cha2ds2vasc') || 0}
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* VRC Score (Conditional) */}
+                    {(watch('gupta_surgical_site') === 'vascular' || watch('gupta_surgical_site') === 'aortic' || watch('gupta_surgical_site') === 'amputation') && (
+                        <ScaleCard
+                            label="VRC Score"
+                            desc="VSGNE Vasc"
+                            autoCalc={true}
+                            onClick={() => setSelectedScale('vrc')}
+                            isAuthorized={authorized['vrc'] === true}
+                            onToggleAuth={(e) => toggleAuth('vrc', e)}
+                        >
+                            <div className="text-center flex items-center justify-center gap-4">
+                                <div>
+                                    <span className={`text-xl font-bold tabular-nums ${(watch('vrc_total') || 0) >= 4 ? 'text-red-600' : 'text-slate-800'}`}>
+                                        {watch('vrc_total') !== -1 ? watch('vrc_total') : '-'}
+                                    </span>
+                                    <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
+                                </div>
+                                <div className="h-8 w-px bg-slate-200/60" />
+                                <p className={`text-[12px] font-semibold ${(watch('vrc_total') || 0) >= 4 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                    {watch('vrc_riesgo') || 'Bajo'}
+                                </p>
+                            </div>
+                        </ScaleCard>
+                    )}
+
+                    {/* SECTION: MULTISYSTEM & ONCO */}
+                    <div className="col-span-full flex items-center gap-2 mt-4 mb-0.5 px-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+                        <span className="text-[12px] font-semibold text-slate-500">Otras Escalas</span>
+                    </div>
+
+                    {/* STOP-BANG */}
+                    <ScaleCard
+                        label="STOP-BANG"
+                        desc="Apnea Sueño"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('stopBang')}
+                        isAuthorized={authorized['stopBang'] === true}
+                        onToggleAuth={(e) => toggleAuth('stopBang', e)}
+                    >
+                        <div className="text-center">
+                            <span className={`text-xl font-bold tabular-nums ${(watch('stopbang_total') || 0) >= 5 ? 'text-red-600' : (watch('stopbang_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-800'}`}>
+                                {watch('stopbang_total') || 0}
+                            </span>
+                            <p className={`text-[10px] font-semibold ${(watch('stopbang_total') || 0) >= 5 ? 'text-red-600' : (watch('stopbang_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-400'}`}>
+                                {(watch('stopbang_total') || 0) >= 5 ? 'Alto' : (watch('stopbang_total') || 0) >= 3 ? 'Inter.' : 'Bajo'}
+                            </p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* HAS-BLED */}
+                    <ScaleCard
+                        label="HAS-BLED"
+                        desc="Sangrado"
+                        autoCalc={true}
+                        onClick={() => setSelectedScale('hasbled')}
+                        isAuthorized={authorized['hasbled'] === true}
+                        onToggleAuth={(e) => toggleAuth('hasbled', e)}
+                    >
+                        <div className="text-center">
+                            <span className={`text-xl font-bold tabular-nums ${(watch('hasbled') || 0) >= 3 ? 'text-red-600' : 'text-slate-800'}`}>
+                                {watch('hasbled') || 0}
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
+                        </div>
+                    </ScaleCard>
+
+                    {/* KHORANA CARD (Conditional) */}
+                    {data.cancer_activo && !['mieloma', 'snc'].includes(data.cancer_tipo_sitio) && (
+                        <ScaleCard
+                            label="KHORANA"
+                            desc="ETV Cáncer"
+                            autoCalc={true}
+                            onClick={() => setSelectedScale('khorana')}
+                            isAuthorized={authorized['khorana'] === true}
+                            onToggleAuth={(e) => toggleAuth('khorana', e)}
+                        >
+                            <div className="text-center">
+                                <span className={`text-xl font-bold tabular-nums ${data.khorana_total >= 3 ? 'text-red-600' : data.khorana_total >= 1 ? 'text-amber-600' : 'text-slate-800'}`}>
+                                    {data.khorana_total || 0}
+                                </span>
+                                <p className={`text-[10px] font-semibold ${data.khorana_total >= 3 ? 'text-red-600' : data.khorana_total >= 1 ? 'text-amber-600' : 'text-slate-400'}`}>
+                                    {data.khorana_riesgo || 'Bajo'}
+                                </p>
+                            </div>
+                        </ScaleCard>
+                    )}
+
+                    {/* VIENNA CATS CARD (Conditional) */}
+                    {data.cancer_activo && (
+                        <ScaleCard
+                            label="VIENNA CATS"
+                            desc="ETV 6m"
+                            autoCalc={true}
+                            onClick={() => setSelectedScale('vienna_cats')}
+                            isAuthorized={authorized['vienna_cats'] === true}
+                            onToggleAuth={(e) => toggleAuth('vienna_cats', e)}
+                        >
+                            <div className="text-center">
+                                <span className={`text-xl font-bold tabular-nums ${(data.vienna_cats_total || 0) >= 8 ? 'text-red-600' : 'text-slate-800'}`}>
+                                    {data.vienna_cats_total || 0}%
+                                </span>
+                                <p className={`text-[10px] font-semibold ${(data.vienna_cats_total || 0) >= 8 ? 'text-red-600' : 'text-slate-400'}`}>
+                                    {data.vienna_cats_risk || 'Sin Riesgo'}
+                                </p>
+                            </div>
+                        </ScaleCard>
+                    )}
                 </div>
-
-                {/* STOP-BANG */}
-                <ScaleCard
-                    label="STOP-BANG"
-                    desc="Apnea Sueño"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('stopBang')}
-                    isAuthorized={authorized['stopBang'] === true}
-                    onToggleAuth={(e) => toggleAuth('stopBang', e)}
-                >
-                    <div className="text-center">
-                        <span className={`text-xl font-bold tabular-nums ${(watch('stopbang_total') || 0) >= 5 ? 'text-red-600' : (watch('stopbang_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-800'}`}>
-                            {watch('stopbang_total') || 0}
-                        </span>
-                        <p className={`text-[10px] font-semibold ${(watch('stopbang_total') || 0) >= 5 ? 'text-red-600' : (watch('stopbang_total') || 0) >= 3 ? 'text-amber-600' : 'text-slate-400'}`}>
-                            {(watch('stopbang_total') || 0) >= 5 ? 'Alto' : (watch('stopbang_total') || 0) >= 3 ? 'Inter.' : 'Bajo'}
-                        </p>
-                    </div>
-                </ScaleCard>
-
-                {/* HAS-BLED */}
-                <ScaleCard
-                    label="HAS-BLED"
-                    desc="Sangrado"
-                    autoCalc={true}
-                    onClick={() => setSelectedScale('hasbled')}
-                    isAuthorized={authorized['hasbled'] === true}
-                    onToggleAuth={(e) => toggleAuth('hasbled', e)}
-                >
-                    <div className="text-center">
-                        <span className={`text-xl font-bold tabular-nums ${(watch('hasbled') || 0) >= 3 ? 'text-red-600' : 'text-slate-800'}`}>
-                            {watch('hasbled') || 0}
-                        </span>
-                        <p className="text-[10px] text-slate-400 font-medium">Puntos</p>
-                    </div>
-                </ScaleCard>
-
-                {/* KHORANA CARD (Conditional) */}
-                {data.cancer_activo && !['mieloma', 'snc'].includes(data.cancer_tipo_sitio) && (
-                    <ScaleCard
-                        label="KHORANA"
-                        desc="ETV Cáncer"
-                        autoCalc={true}
-                        onClick={() => setSelectedScale('khorana')}
-                        isAuthorized={authorized['khorana'] === true}
-                        onToggleAuth={(e) => toggleAuth('khorana', e)}
-                    >
-                        <div className="text-center">
-                            <span className={`text-xl font-bold tabular-nums ${data.khorana_total >= 3 ? 'text-red-600' : data.khorana_total >= 1 ? 'text-amber-600' : 'text-slate-800'}`}>
-                                {data.khorana_total || 0}
-                            </span>
-                            <p className={`text-[10px] font-semibold ${data.khorana_total >= 3 ? 'text-red-600' : data.khorana_total >= 1 ? 'text-amber-600' : 'text-slate-400'}`}>
-                                {data.khorana_riesgo || 'Bajo'}
-                            </p>
-                        </div>
-                    </ScaleCard>
-                )}
-
-                {/* VIENNA CATS CARD (Conditional) */}
-                {data.cancer_activo && (
-                    <ScaleCard
-                        label="VIENNA CATS"
-                        desc="ETV 6m"
-                        autoCalc={true}
-                        onClick={() => setSelectedScale('vienna_cats')}
-                        isAuthorized={authorized['vienna_cats'] === true}
-                        onToggleAuth={(e) => toggleAuth('vienna_cats', e)}
-                    >
-                        <div className="text-center">
-                            <span className={`text-xl font-bold tabular-nums ${(data.vienna_cats_total || 0) >= 8 ? 'text-red-600' : 'text-slate-800'}`}>
-                                {data.vienna_cats_total || 0}%
-                            </span>
-                            <p className={`text-[10px] font-semibold ${(data.vienna_cats_total || 0) >= 8 ? 'text-red-600' : 'text-slate-400'}`}>
-                                {data.vienna_cats_risk || 'Sin Riesgo'}
-                            </p>
-                        </div>
-                    </ScaleCard>
-                )}
             </div>
         </div>
     );

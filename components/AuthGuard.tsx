@@ -16,7 +16,10 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     const [recoveryMode, setRecoveryMode] = useState(false);
 
     useEffect(() => {
-        // Password recovery is detected via onAuthStateChange below — no pathname check needed.
+        // Explicitly check hash for password recovery immediately on load
+        if (window.location.hash.includes('type=recovery')) {
+            setRecoveryMode(true);
+        }
 
         if (!supabase) {
             // No Supabase config — allow access (dev mode)

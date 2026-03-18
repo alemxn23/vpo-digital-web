@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import {
     X, ShieldCheck, Clock, CheckCircle2, XCircle, Camera, Upload,
-    IdCard, AlertCircle, Loader2, RotateCcw, ChevronRight, UserCheck
+    IdCard, AlertCircle, Loader2, RotateCcw, ChevronRight, UserCheck, Check
 } from 'lucide-react';
 
 interface DoctorProfile {
@@ -39,17 +39,16 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
     const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const ineInputRef = useRef<HTMLInputElement>(null);
+    const selfieInputRef = useRef<HTMLInputElement>(null);
 
     const [editMode, setEditMode] = useState(!profile?.cedula_profesional || !profile?.full_name);
     const [cedulaInput, setCedulaInput] = useState(profile?.cedula_profesional || '');
     const [nameInput, setNameInput] = useState(profile?.full_name || '');
 
-    // Stop camera on unmount or when navigating away
     useEffect(() => {
         return () => stopCamera();
     }, []);
 
-    // Sync state if profile loads slightly after modal opens
     useEffect(() => {
         if (profile) {
             if (!cedulaInput && profile.cedula_profesional) setCedulaInput(profile.cedula_profesional);
@@ -77,7 +76,8 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
             setCameraOn(true);
             setStep('selfie');
         } catch {
-            setError('No se pudo acceder a la cámara. Verifica los permisos del navegador.');
+            setError('No se pudo acceder a la cámara. Verifica los permisos del navegador o sube una foto desde tus archivos.');
+            setStep('selfie');
         }
     };
 
@@ -100,6 +100,21 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
     const retakeSelfie = () => {
         setSelfieDataUrl(null);
         startCamera();
+    };
+
+    const handleSelfieFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 10 * 1024 * 1024) {
+            setError('El archivo es demasiado grande (máx. 10 MB).');
+            return;
+        }
+        stopCamera();
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setSelfieDataUrl(ev.target?.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleIneFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +141,7 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
 
     const handleSubmit = async () => {
         if (!supabase) return setError('Servicio no disponible.');
-        if (!selfieDataUrl) return setError('Por favor toma una selfie primero.');
+        if (!selfieDataUrl) return setError('Por favor proporciona una foto de tu rostro.');
         if (!ineFile) return setError('Por favor sube tu INE.');
         setUploading(true);
         setError('');
@@ -154,7 +169,6 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
             const { data: ineData } = supabase.storage.from('ine-comprobantes').getPublicUrl(`${userId}/ine_${ts}.${ineExt}`);
 
             // 3. Update profile
-            // Use up-to-date inputs inside the modal if editMode was true
             const profileUpdates: any = {
                 verification_status: 'pending',
                 ine_url: ineData?.publicUrl || null,
@@ -175,99 +189,94 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
         }
     };
 
-    // --- Status badge helper ---
     const StatusBadge = () => {
         const s = profile?.verification_status || 'unverified';
         if (s === 'approved' || profile?.verified) return (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
-                <CheckCircle2 size={14} className="text-emerald-400" />
-                <span className="text-xs font-bold text-emerald-400">Verificado</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+                <CheckCircle2 size={12} className="text-emerald-500" />
+                <span className="text-[10px] uppercase tracking-wide font-bold">Verificado</span>
             </div>
         );
         if (s === 'pending') return (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full">
-                <Clock size={14} className="text-amber-400" />
-                <span className="text-xs font-bold text-amber-400">Pendiente de revisión</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full">
+                <Clock size={12} className="text-amber-500" />
+                <span className="text-[10px] uppercase tracking-wide font-bold">En Revisión</span>
             </div>
         );
         if (s === 'rejected') return (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-full">
-                <XCircle size={14} className="text-red-400" />
-                <span className="text-xs font-bold text-red-400">Rechazado — reenvía documentación</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full">
+                <XCircle size={12} className="text-red-500" />
+                <span className="text-[10px] uppercase tracking-wide font-bold">Rechazado</span>
             </div>
         );
         return (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 border border-slate-600/50 rounded-full">
-                <ShieldCheck size={14} className="text-slate-400" />
-                <span className="text-xs font-bold text-slate-400">Sin verificar</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded-full">
+                <ShieldCheck size={12} className="text-slate-400" />
+                <span className="text-[10px] uppercase tracking-wide font-bold">Sin verificar</span>
             </div>
         );
     };
 
     const currentStatus = profile?.verification_status || 'unverified';
     const canStartVerification = currentStatus === 'unverified' || currentStatus === 'rejected';
+    const inputClass = "w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all";
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div className="relative w-full max-w-md bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl shadow-teal-900/20 overflow-hidden">
-                {/* Top accent */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 via-cyan-400 to-indigo-500" />
-
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="relative w-full max-w-md bg-white border border-slate-200/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-slate-700/50">
+                <div className="px-6 py-5 flex items-center justify-between border-b border-slate-100 bg-white">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
-                            <UserCheck size={18} className="text-teal-400" />
+                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm">
+                            <UserCheck size={20} strokeWidth={1.5} className="text-slate-700" />
                         </div>
                         <div>
-                            <h2 className="text-base font-black text-white leading-tight">Perfil Médico</h2>
-                            <p className="text-[11px] text-slate-400">Verificación de identidad profesional</p>
+                            <h2 className="text-base font-bold text-slate-800 leading-tight">Perfil Médico</h2>
+                            <p className="text-[12px] font-medium text-slate-400">Verificación de identidad profesional</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-800">
-                        <X size={18} />
+                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                        <X size={16} strokeWidth={2} />
                     </button>
                 </div>
 
-                <div className="px-6 pb-6 pt-4">
+                <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
                     {/* Profile Info - always visible */}
-                    <div className="bg-slate-800/40 rounded-xl p-4 mb-4 border border-slate-700/30">
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <p className="text-white font-bold text-sm truncate">{nameInput || profile?.full_name || '—'}</p>
-                                <p className="text-slate-400 text-xs mt-0.5">Cédula Profesional: <span className="text-teal-400 font-mono font-bold">{cedulaInput || profile?.cedula_profesional || '—'}</span></p>
-                            </div>
-                            <StatusBadge />
+                    <div className="bg-white rounded-xl p-4 mb-6 border border-slate-200/60 shadow-sm flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                            <p className="text-slate-800 font-bold text-sm truncate">{nameInput || profile?.full_name || '—'}</p>
+                            <p className="text-slate-500 text-[11px] mt-0.5 font-medium">Cédula: <span className="text-slate-800 font-mono font-bold">{cedulaInput || profile?.cedula_profesional || '—'}</span></p>
                         </div>
+                        <StatusBadge />
                     </div>
 
-                    {/* --- STEP: STATUS (already verified or pending) --- */}
+                    {/* --- STEP: STATUS --- */}
                     {step === 'status' && (
                         <div className="space-y-4">
                             {(profile?.verification_status === 'approved' || profile?.verified) && (
                                 <div className="flex flex-col items-center gap-3 py-6">
-                                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                                        <CheckCircle2 size={32} className="text-emerald-400" />
+                                    <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shadow-sm">
+                                        <CheckCircle2 size={32} strokeWidth={1.5} className="text-emerald-500" />
                                     </div>
-                                    <p className="text-emerald-300 font-bold text-sm text-center">¡Tu identidad médica ha sido verificada!</p>
-                                    <p className="text-slate-400 text-xs text-center">Tu nombre y cédula aparecerán con el badge ✅ en todos los reportes generados.</p>
+                                    <h3 className="text-slate-800 font-bold text-base mt-2">¡Identidad Verificada!</h3>
+                                    <p className="text-slate-500 text-xs text-center leading-relaxed px-4">Tu nombre y cédula aparecerán con la marca de verificación en todos tus reportes generados.</p>
                                 </div>
                             )}
                             {profile?.verification_status === 'pending' && (
                                 <div className="flex flex-col items-center gap-3 py-6">
-                                    <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-                                        <Clock size={32} className="text-amber-400" />
+                                    <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shadow-sm">
+                                        <Clock size={32} strokeWidth={1.5} className="text-amber-500" />
                                     </div>
-                                    <p className="text-amber-300 font-bold text-sm text-center">Solicitud en revisión</p>
-                                    <p className="text-slate-400 text-xs text-center leading-relaxed">Estamos verificando tu cédula en el Registro Nacional de Profesionistas (SEP) y revisando tu INE. Te notificaremos en 24-48 horas.</p>
+                                    <h3 className="text-slate-800 font-bold text-base mt-2">Solicitud en revisión</h3>
+                                    <p className="text-slate-500 text-xs text-center leading-relaxed px-4">Estamos revisando tus datos en el Registro Nacional de Profesionistas. Te notificaremos pronto.</p>
                                 </div>
                             )}
                             {canStartVerification && (
                                 <button
                                     onClick={() => setStep('cedula')}
-                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold py-3 rounded-xl transition-all text-sm"
+                                    className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-md text-[13px]"
                                 >
-                                    Iniciar Verificación <ChevronRight size={16} />
+                                    Iniciar Proceso de Verificación <ChevronRight size={16} />
                                 </button>
                             )}
                         </div>
@@ -275,74 +284,76 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
 
                     {/* --- STEP: CEDULA REVIEW --- */}
                     {step === 'cedula' && (
-                        <div className="space-y-4">
-                            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                                <p className="text-xs text-blue-300 leading-relaxed">
-                                    <strong>Paso 1 de 3: Confirma tu identidad</strong><br />
-                                    Ingresa los datos exactos que aparecen en tu cédula. Los verificaremos en el Registro Nacional de Profesionistas (SEP).
-                                </p>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="flex flex-col mb-2">
+                                <span className="text-[10px] font-bold text-cyan-600 tracking-wider uppercase mb-1">Paso 1 de 3</span>
+                                <h3 className="text-base font-bold text-slate-800">Confirma tu identidad</h3>
+                                <p className="text-xs text-slate-500 mt-1">Ingresa los datos exactos que aparecen en tu cédula para su verificación en la SEP.</p>
                             </div>
 
                             {editMode ? (
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-400 mb-1">Nombre Completo</label>
+                                        <label className="block text-[11px] font-bold text-slate-500 mb-1.5 ml-1">Nombre Completo</label>
                                         <input
                                             type="text"
                                             value={nameInput}
                                             onChange={e => setNameInput(e.target.value)}
                                             placeholder="Ej. Dr. Juan Pérez García"
-                                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                            className={inputClass}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-400 mb-1">Cédula Profesional</label>
+                                        <label className="block text-[11px] font-bold text-slate-500 mb-1.5 ml-1">Cédula Profesional</label>
                                         <input
                                             type="text"
                                             value={cedulaInput}
                                             onChange={e => setCedulaInput(e.target.value)}
                                             placeholder="Ej. 12345678"
-                                            className="w-full bg-slate-800 border border-slate-700 text-white font-mono rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                            className={`${inputClass} font-mono`}
                                         />
                                     </div>
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-3 bg-slate-800/60 rounded-xl p-3 border border-slate-600/40">
-                                    <IdCard size={20} className="text-teal-400 shrink-0" />
+                                <div className="flex items-center gap-3 bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div className="w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center shrink-0">
+                                        <IdCard size={18} className="text-cyan-600" />
+                                    </div>
                                     <div>
-                                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Cédula Profesional</p>
-                                        <p className="text-white font-mono font-bold">{cedulaInput}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Cédula Registrada</p>
+                                        <p className="text-slate-800 font-mono font-bold mt-0.5">{cedulaInput}</p>
                                     </div>
                                 </div>
                             )}
 
                             {error && (
-                                <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2">
-                                    <AlertCircle size={14} className="text-red-400 shrink-0 mt-0.5" />
-                                    <p className="text-red-300 text-xs">{error}</p>
+                                <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3">
+                                    <AlertCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
+                                    <p className="text-red-800 text-xs font-medium">{error}</p>
                                 </div>
                             )}
 
                             <button
                                 onClick={startCamera}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold py-3 rounded-xl transition-all text-sm"
+                                className="w-full mt-2 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm text-[13px]"
                             >
-                                Confirmar — Tomar Selfie <ChevronRight size={16} />
+                                Continuar Paso 2 <ChevronRight size={16} />
                             </button>
                         </div>
                     )}
 
                     {/* --- STEP: SELFIE --- */}
                     {step === 'selfie' && (
-                        <div className="space-y-4">
-                            <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-                                <p className="text-xs text-purple-300 leading-relaxed">
-                                    <strong>Paso 2 de 3: Selfie biométrica</strong><br />
-                                    Toma una foto de tu cara con buena iluminación. La compararemos con tu INE para verificar tu identidad.
-                                </p>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-right-2 duration-300">
+                            <div className="flex flex-col mb-2">
+                                <span className="text-[10px] font-bold text-cyan-600 tracking-wider uppercase mb-1">Paso 2 de 3</span>
+                                <h3 className="text-base font-bold text-slate-800">Fotografía de rostro</h3>
+                                <p className="text-xs text-slate-500 mt-1">Toma una foto en el momento o sube una imagen de tu cara con buena iluminación.</p>
                             </div>
 
-                            <div className="relative rounded-xl bg-slate-800 overflow-hidden aspect-square flex items-center justify-center border border-slate-600/30">
+                            <input ref={selfieInputRef} type="file" accept="image/*" className="hidden" onChange={handleSelfieFile} />
+
+                            <div className="relative rounded-2xl bg-slate-100 overflow-hidden aspect-square flex items-center justify-center border border-slate-200/80 shadow-inner">
                                 {selfieDataUrl ? (
                                     <img src={selfieDataUrl} alt="Selfie" className="w-full h-full object-cover" />
                                 ) : (
@@ -355,48 +366,53 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
                                             autoPlay
                                         />
                                         {!cameraOn && (
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-500 bg-slate-800 z-10">
-                                                <Camera size={32} />
-                                                <p className="text-xs">Cámara no activa</p>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-slate-400 bg-slate-50">
+                                                <Camera size={40} strokeWidth={1} />
+                                                <p className="text-xs font-medium">Cámara no iniciada</p>
+                                            </div>
+                                        )}
+                                        {/* Guide */}
+                                        {cameraOn && (
+                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                                <div className="w-48 h-48 rounded-full border-[3px] border-white/60 border-dashed drop-shadow-md" />
                                             </div>
                                         )}
                                     </>
                                 )}
-                                {/* Face guide overlay */}
-                                {cameraOn && !selfieDataUrl && (
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                                        <div className="w-40 h-40 rounded-full border-4 border-teal-400/60 border-dashed" />
-                                    </div>
-                                )}
                             </div>
 
                             {error && (
-                                <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2">
-                                    <AlertCircle size={14} className="text-red-400 shrink-0 mt-0.5" />
-                                    <p className="text-red-300 text-xs">{error}</p>
+                                <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3">
+                                    <AlertCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
+                                    <p className="text-red-800 text-xs font-medium">{error}</p>
                                 </div>
                             )}
 
-                            <div className="flex gap-2">
-                                {!selfieDataUrl && !cameraOn && (
-                                    <button onClick={startCamera} className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition-all">
-                                        <Camera size={16} /> Abrir Cámara
-                                    </button>
-                                )}
-                                {cameraOn && !selfieDataUrl && (
-                                    <button onClick={takeSelfie} className="flex-1 flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-xl text-sm transition-all">
-                                        <Camera size={16} /> Tomar Foto
-                                    </button>
-                                )}
-                                {selfieDataUrl && (
-                                    <>
-                                        <button onClick={retakeSelfie} className="flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all">
-                                            <RotateCcw size={14} /> Repetir
+                            <div className="flex flex-col gap-3">
+                                {!selfieDataUrl ? (
+                                    <div className="flex gap-2">
+                                        {!cameraOn ? (
+                                            <button onClick={startCamera} className="flex flex-1 items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-[13px] transition-all shadow-sm">
+                                                <Camera size={16} /> Abrir Cámara
+                                            </button>
+                                        ) : (
+                                            <button onClick={takeSelfie} className="flex flex-1 items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-[13px] transition-all shadow-sm">
+                                                <Camera size={16} /> Tomar Foto Ahora
+                                            </button>
+                                        )}
+                                        <button onClick={() => selfieInputRef.current?.click()} className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3.5 px-4 rounded-xl text-[13px] transition-all shadow-sm">
+                                            <Upload size={16} className="text-slate-500" /> Archivo
                                         </button>
-                                        <button onClick={() => { setError(''); setStep('ine'); }} className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold py-2.5 rounded-xl text-sm transition-all">
-                                            Continuar <ChevronRight size={16} />
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <button onClick={retakeSelfie} className="flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-bold py-3.5 px-5 rounded-xl text-[13px] transition-all shadow-sm">
+                                            <RotateCcw size={16} />
                                         </button>
-                                    </>
+                                        <button onClick={() => { setError(''); setStep('ine'); }} className="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-[13px] transition-all shadow-sm">
+                                            Continuar Paso 3 <ChevronRight size={16} />
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -404,72 +420,78 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
 
                     {/* --- STEP: INE UPLOAD --- */}
                     {step === 'ine' && (
-                        <div className="space-y-4">
-                            <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl">
-                                <p className="text-xs text-teal-300 leading-relaxed">
-                                    <strong>Paso 3 de 3: Sube tu INE</strong><br />
-                                    Sube una foto clara (frontal) de tu INE/IFE vigente. Máx. 10 MB. JPG, PNG o PDF.
-                                </p>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-right-2 duration-300">
+                            <div className="flex flex-col mb-2">
+                                <span className="text-[10px] font-bold text-cyan-600 tracking-wider uppercase mb-1">Paso 3 de 3</span>
+                                <h3 className="text-base font-bold text-slate-800">Documento de Identidad</h3>
+                                <p className="text-xs text-slate-500 mt-1">Sube una foto clara (frontal) de tu INE/IFE vigente para validar tu identidad.</p>
                             </div>
 
                             <input ref={ineInputRef} type="file" accept="image/*,.pdf" className="hidden" onChange={handleIneFile} />
 
                             {inePreview ? (
-                                <div className="relative rounded-xl overflow-hidden border border-slate-600/30">
+                                <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white">
                                     {ineFile?.type === 'application/pdf' ? (
-                                        <div className="flex flex-col items-center gap-2 py-8 bg-slate-800/60">
-                                            <IdCard size={32} className="text-teal-400" />
-                                            <p className="text-xs text-slate-300 font-medium">{ineFile.name}</p>
+                                        <div className="flex flex-col items-center gap-3 py-10 bg-slate-50">
+                                            <IdCard size={40} strokeWidth={1.5} className="text-slate-400" />
+                                            <p className="text-[13px] text-slate-600 font-semibold">{ineFile.name}</p>
                                         </div>
                                     ) : (
-                                        <img src={inePreview} alt="INE" className="w-full max-h-48 object-contain bg-slate-800" />
+                                        <div className="bg-slate-50 aspect-video flex items-center justify-center p-2">
+                                            <img src={inePreview} alt="INE" className="w-full h-full object-contain rounded-lg" />
+                                        </div>
                                     )}
-                                    <button onClick={() => { setIneFile(null); setInePreview(null); }} className="absolute top-2 right-2 p-1 bg-red-500/80 rounded-full text-white hover:bg-red-500 transition-colors">
-                                        <X size={12} />
+                                    <button onClick={() => { setIneFile(null); setInePreview(null); }} className="absolute top-3 right-3 p-1.5 bg-white/90 backdrop-blur-sm shadow-sm rounded-full text-slate-600 hover:text-red-500 hover:bg-white transition-colors">
+                                        <X size={14} strokeWidth={2.5} />
                                     </button>
                                 </div>
                             ) : (
                                 <button
                                     onClick={() => ineInputRef.current?.click()}
-                                    className="w-full border-2 border-dashed border-slate-600 hover:border-teal-400/50 rounded-xl p-8 flex flex-col items-center gap-2 text-slate-500 hover:text-teal-400 transition-all"
+                                    className="w-full bg-white border-2 border-dashed border-slate-300 hover:border-cyan-500/50 hover:bg-cyan-50/30 rounded-2xl p-8 flex flex-col items-center gap-3 text-slate-500 hover:text-cyan-600 transition-all group"
                                 >
-                                    <Upload size={24} />
-                                    <span className="text-xs font-medium">Seleccionar INE</span>
+                                    <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-cyan-100/50 transition-colors">
+                                        <Upload size={20} strokeWidth={1.5} />
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-sm font-bold text-slate-700 group-hover:text-cyan-700 block mb-0.5">Seleccionar Documento</span>
+                                        <span className="text-[11px] text-slate-400">Archivos JPG, PNG o PDF (Máx. 10 MB)</span>
+                                    </div>
                                 </button>
                             )}
 
                             {error && (
-                                <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2">
-                                    <AlertCircle size={14} className="text-red-400 shrink-0 mt-0.5" />
-                                    <p className="text-red-300 text-xs">{error}</p>
+                                <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3">
+                                    <AlertCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
+                                    <p className="text-red-800 text-xs font-medium">{error}</p>
                                 </div>
                             )}
 
                             <button
                                 onClick={handleSubmit}
                                 disabled={uploading || !ineFile}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold py-3 rounded-xl transition-all text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full mt-2 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm text-[13px] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {uploading ? <><Loader2 size={16} className="animate-spin" /> Enviando...</> : <><ShieldCheck size={16} /> Enviar para Verificación</>}
+                                {uploading ? <><Loader2 size={16} className="animate-spin" /> Procesando Solicitud...</> : <><ShieldCheck size={16} /> Enviar para Verificación</>}
                             </button>
                         </div>
                     )}
 
                     {/* --- STEP: DONE --- */}
                     {step === 'done' && (
-                        <div className="flex flex-col items-center gap-4 py-6">
-                            <div className="w-16 h-16 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
-                                <CheckCircle2 size={32} className="text-teal-400" />
+                        <div className="flex flex-col items-center gap-4 py-8 animate-in zoom-in-95 duration-500">
+                            <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shadow-sm">
+                                <Check size={40} strokeWidth={2} className="text-emerald-500" />
                             </div>
-                            <div className="text-center">
-                                <p className="text-white font-bold text-sm">¡Solicitud enviada!</p>
-                                <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-                                    Verificaremos tu cédula en el Registro Nacional de Profesionistas (SEP) y revisaremos tu INE.<br />
-                                    <span className="text-teal-400 font-semibold">Te notificaremos en 24-48 horas.</span>
+                            <div className="text-center space-y-2">
+                                <h3 className="text-slate-800 font-bold text-xl">¡Solicitud recibida!</h3>
+                                <p className="text-slate-500 text-xs leading-relaxed px-6">
+                                    Hemos recibido exitosamente tu documentación y la validaremos junto con tu número de cédula en el Registro Nacional de Profesionistas.<br /><br />
+                                    <span className="text-slate-800 font-semibold">Te notificaremos el resultado en máximo 24-48 hrs.</span>
                                 </p>
                             </div>
-                            <button onClick={onClose} className="px-8 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl text-sm transition-all">
-                                Cerrar
+                            <button onClick={onClose} className="w-full mt-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-[13px] transition-all">
+                                Cerrar y Volver
                             </button>
                         </div>
                     )}

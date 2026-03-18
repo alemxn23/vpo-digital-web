@@ -51,7 +51,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
                 </div>
                 <button
                     onClick={() => onShowAuth('login')}
-                    className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium 
+                    className="flex items-center gap-2 text-white hover:text-slate-300 text-sm font-medium 
               transition-all duration-300 px-4 py-2 rounded-xl hover:bg-white/[0.06]"
                 >
                     <LogIn size={15} strokeWidth={1.5} />

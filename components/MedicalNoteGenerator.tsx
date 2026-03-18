@@ -15,7 +15,7 @@ const MedicalNoteGenerator: React.FC<MedicalNoteGeneratorProps> = ({ isUnlocked 
     const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
     const handleCopy = (text: string, sectionId: string) => {
-        if (!isUnlocked) {
+        if (!isUnlocked && !watch('is_vip_live')) {
             onRequestUnlock?.();
             return;
         }
@@ -159,14 +159,16 @@ const MedicalNoteGenerator: React.FC<MedicalNoteGeneratorProps> = ({ isUnlocked 
                 <button
                     onClick={() => handleCopy(fullNote, 'full')}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[12px] font-semibold transition-all duration-200 active:scale-95 ${isUnlocked
-                            ? copiedSection === 'full'
-                                ? 'bg-emerald-50/50 border-emerald-200/60 text-emerald-700 shadow-sm'
-                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:shadow-sm'
+                        ? copiedSection === 'full'
+                            ? 'bg-emerald-50/50 border-emerald-200/60 text-emerald-700 shadow-sm'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:shadow-sm'
+                        : watch('is_vip_live')
+                            ? 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:shadow-sm'
                             : 'bg-amber-50/50 border-amber-200/60 text-amber-700 hover:bg-amber-50 hover:border-amber-300'
                         }`}
                     title={isUnlocked ? 'Copiar nota completa' : 'Desbloquear VPO para copiar'}
                 >
-                    {isUnlocked
+                    {isUnlocked || watch('is_vip_live')
                         ? (copiedSection === 'full'
                             ? <><Check size={14} strokeWidth={1.5} /> Copiada</>
                             : <><Copy size={14} strokeWidth={1.5} /> Copiar Nota Completa</>)
@@ -178,69 +180,69 @@ const MedicalNoteGenerator: React.FC<MedicalNoteGeneratorProps> = ({ isUnlocked 
             {/* CARD — starts here */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col flex-1">
 
-            {/* INFO BANNERS */}
-            <div className="px-5 pt-4 pb-1 space-y-2.5 bg-white">
-                {!isUnlocked && (
-                    <div className="p-3 bg-amber-50/50 border border-amber-200/40 rounded-xl text-[11px] text-amber-800 flex items-center gap-2.5">
-                        <div className="p-1.5 bg-amber-100 rounded-lg">
-                            <Lock size={12} className="text-amber-600" strokeWidth={1.5} />
-                        </div>
-                        <span><span className="font-semibold">VPO bloqueado.</span> Puedes consultar la nota, pero la copia está restringida. Desbloquea el VPO para habilitar la función de copiado.</span>
-                    </div>
-                )}
-                <div className="p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl text-[11px] text-slate-500 flex items-center gap-2.5">
-                    <div className="p-1.5 bg-slate-100 rounded-lg">
-                        <Info size={12} className="text-slate-400" strokeWidth={1.5} />
-                    </div>
-                    <span>Nota estructurada bajo la norma <span className="font-semibold text-slate-600">NOM-004-SSA3-2012</span>. Copie secciones individuales o la nota completa para su expediente electrónico.</span>
-                </div>
-            </div>
-
-            {/* SECTIONS — Card-based stacked layout matching Recommendations */}
-            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
-                {sectionConfig.map(section => (
-                    <div key={section.id} className="flex flex-col gap-2">
-
-                        {/* Label — outside the box */}
-                        <div className="flex items-center justify-between px-1">
-                            <div className="flex items-center gap-2">
-                                <section.icon size={15} className="text-slate-400" strokeWidth={1.5} />
-                                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">{section.title}</span>
+                {/* INFO BANNERS */}
+                <div className="px-5 pt-4 pb-1 space-y-2.5 bg-white">
+                    {!isUnlocked && !watch('is_vip_live') && (
+                        <div className="p-3 bg-amber-50/50 border border-amber-200/40 rounded-xl text-[11px] text-amber-800 flex items-center gap-2.5">
+                            <div className="p-1.5 bg-amber-100 rounded-lg">
+                                <Lock size={12} className="text-amber-600" strokeWidth={1.5} />
                             </div>
-                            <button
-                                onClick={() => handleCopy(section.content, section.id)}
-                                className={`flex items-center gap-1.5 text-[11px] font-medium transition-all duration-200 ${copiedSection === section.id
+                            <span><span className="font-semibold">VPO bloqueado.</span> Puedes consultar la nota, pero la copia está restringida. Desbloquea el VPO para habilitar la función de copiado.</span>
+                        </div>
+                    )}
+                    <div className="p-3 bg-slate-50/50 border border-slate-200/40 rounded-xl text-[11px] text-slate-500 flex items-center gap-2.5">
+                        <div className="p-1.5 bg-slate-100 rounded-lg">
+                            <Info size={12} className="text-slate-400" strokeWidth={1.5} />
+                        </div>
+                        <span>Nota estructurada bajo la norma <span className="font-semibold text-slate-600">NOM-004-SSA3-2012</span>. Copie secciones individuales o la nota completa para su expediente electrónico.</span>
+                    </div>
+                </div>
+
+                {/* SECTIONS — Card-based stacked layout matching Recommendations */}
+                <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
+                    {sectionConfig.map(section => (
+                        <div key={section.id} className="flex flex-col gap-2">
+
+                            {/* Label — outside the box */}
+                            <div className="flex items-center justify-between px-1">
+                                <div className="flex items-center gap-2">
+                                    <section.icon size={15} className="text-slate-400" strokeWidth={1.5} />
+                                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">{section.title}</span>
+                                </div>
+                                <button
+                                    onClick={() => handleCopy(section.content, section.id)}
+                                    className={`flex items-center gap-1.5 text-[11px] font-medium transition-all duration-200 ${copiedSection === section.id
                                         ? 'text-emerald-600'
                                         : isUnlocked
                                             ? 'text-slate-400 hover:text-slate-600'
                                             : 'text-amber-400 hover:text-amber-600'
-                                    }`}
-                                title={isUnlocked ? 'Copiar sección' : 'Desbloquear VPO para copiar'}
-                            >
-                                {copiedSection === section.id
-                                    ? <><Check size={11} strokeWidth={1.5} /> Copiado</>
-                                    : isUnlocked
-                                        ? <><Copy size={11} strokeWidth={1.5} /> Copiar</>
-                                        : <Lock size={11} strokeWidth={1.5} />
-                                }
-                            </button>
+                                        }`}
+                                    title={isUnlocked ? 'Copiar sección' : 'Desbloquear VPO para copiar'}
+                                >
+                                    {copiedSection === section.id
+                                        ? <><Check size={11} strokeWidth={1.5} /> Copiado</>
+                                        : (isUnlocked || watch('is_vip_live'))
+                                            ? <><Copy size={11} strokeWidth={1.5} /> Copiar</>
+                                            : <Lock size={11} strokeWidth={1.5} />
+                                    }
+                                </button>
+                            </div>
+
+                            {/* Content box */}
+                            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm px-4 py-3.5">
+                                <pre className="text-[13px] text-slate-700 font-sans whitespace-pre-wrap leading-relaxed">
+                                    {section.content}
+                                </pre>
+                            </div>
+
                         </div>
+                    ))}
+                </div>
 
-                        {/* Content box */}
-                        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm px-4 py-3.5">
-                            <pre className="text-[13px] text-slate-700 font-sans whitespace-pre-wrap leading-relaxed">
-                                {section.content}
-                            </pre>
-                        </div>
-
-                    </div>
-                ))}
-            </div>
-
-            {/* FOOTER */}
-            <div className="px-6 py-3 bg-slate-50/30 border-t border-slate-100 text-[10px] text-center text-slate-400 font-medium">
-                VPO Digital · Centro Médico Nacional Siglo XXI
-            </div>
+                {/* FOOTER */}
+                <div className="px-6 py-3 bg-slate-50/30 border-t border-slate-100 text-[10px] text-center text-slate-400 font-medium">
+                    VPO Digital · Centro Médico Nacional Siglo XXI
+                </div>
             </div>{/* end card */}
         </div>
     );

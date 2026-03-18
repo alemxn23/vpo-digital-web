@@ -135,10 +135,10 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
                 <table border={0} cellPadding={0} cellSpacing={0} style={baseTable}>
                     <tbody>
                         <tr>
-                            <td width="90" valign="middle" style={{ width: '90px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
-                                <img src="/logo.png" alt="Logo" style={{ width: 'auto', height: '65px', opacity: 0.7 }} />
+                            <td width="130" valign="middle" style={{ width: '130px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
+                                <img src="/logo.png?v=8" alt="Logo" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
                             </td>
-                            <td width="324" valign="bottom" style={{ paddingLeft: '24px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
+                            <td width="284" valign="bottom" style={{ paddingLeft: '24px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
                                 <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.01em', marginBottom: '2px', lineHeight: '1' }}>
                                     {(data.unidadMedica || '').toUpperCase()}
                                 </div>
@@ -483,10 +483,10 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
                 <table border={0} cellPadding={0} cellSpacing={0} style={baseTable}>
                     <tbody>
                         <tr>
-                            <td width="90" valign="middle" style={{ width: '90px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
-                                <img src="/logo.png" alt="Logo" style={{ width: 'auto', height: '65px', opacity: 0.7 }} />
+                            <td width="130" valign="middle" style={{ width: '130px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
+                                <img src="/logo.png?v=8" alt="Logo" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
                             </td>
-                            <td width="324" valign="bottom" style={{ paddingLeft: '24px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
+                            <td width="284" valign="bottom" style={{ paddingLeft: '24px', borderBottom: '2px solid black', paddingBottom: '12px' }}>
                                 <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.01em', marginBottom: '2px', lineHeight: '1' }}>
                                     {(data.unidadMedica || 'CMN SIGLO XXI').toUpperCase()}
                                 </div>

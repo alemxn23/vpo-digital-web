@@ -81,7 +81,7 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ isLocked = false, onNewPatien
             <h2 className="text-base font-bold text-slate-800 leading-tight">Ficha Paciente</h2>
             <p className="text-[11px] text-slate-400 font-medium">Datos generales del paciente</p>
           </div>
-          {isLocked && (
+          {isLocked && !watch('is_vip_live') && (
             <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full ml-1">
               <Lock size={10} strokeWidth={1.5} /> Solo lectura
             </span>
@@ -101,7 +101,7 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ isLocked = false, onNewPatien
         </button>
       </div>
 
-      {isLocked && (
+      {isLocked && !watch('is_vip_live') && (
         <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs font-medium">
           <Lock size={14} className="shrink-0 text-amber-500" strokeWidth={1.5} />
           <span>VPO bloqueado para edición. Usa <b>Nuevo Paciente</b> para iniciar una nueva valoración.</span>
@@ -109,7 +109,7 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ isLocked = false, onNewPatien
       )}
 
       {/* ── Main Form Card ── */}
-      <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden ${isLocked ? 'opacity-50 pointer-events-none select-none' : ''}`}>
+      <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden ${isLocked && !watch('is_vip_live') ? 'opacity-50 pointer-events-none select-none' : ''}`}>
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
 
           {/* ── LEFT COLUMN — Patient Identity ── */}

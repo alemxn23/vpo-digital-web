@@ -20,7 +20,10 @@ import {
   MessageCircle,
   Settings,
   ClipboardList,
-  LogOut
+  LogOut,
+  Coins,
+  Unlock,
+  ChevronRight
 } from 'lucide-react';
 import PatientInfo from './components/PatientInfo';
 import RiskFactors from './components/RiskFactors';
@@ -79,7 +82,10 @@ const StickyHeader = ({ onOpenAccount, onOpenProfile, doctorProfile }: {
   const cedulaDisplay = doctorProfile?.cedula_profesional || '—';
   const isVerified = doctorProfile?.verified || doctorProfile?.verification_status === 'approved';
   const initials = doctorName.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('').toUpperCase() || 'DR';
-  const credits = (watch('paid_credits_live') as number) ?? 0;
+  const paidCredits = (watch('paid_credits_live') as number) ?? 0;
+  const freeVposUsed = (watch('free_vpos_used_today_live') as number) ?? 0;
+  const hasFreeVpo = freeVposUsed < 1;
+  const credits = paidCredits + (hasFreeVpo ? 1 : 0);
 
   return (
     <header className="sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 z-30 no-print h-14 md:h-[60px]">
@@ -112,12 +118,10 @@ const StickyHeader = ({ onOpenAccount, onOpenProfile, doctorProfile }: {
             active:scale-[0.98]
             transition-all duration-200"
         >
-          {/* Coin icon — filled amber circle with lines */}
-          <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" fill="#f59e0b" />
-            <path d="M12 7v10M9 9.5h4.5a1.5 1.5 0 0 1 0 3H10.5a1.5 1.5 0 0 0 0 3H15" stroke="white" strokeWidth={1.8} strokeLinecap="round" />
-          </svg>
-          <span className="text-sm font-bold tabular-nums text-slate-700">{credits}</span>
+          <div className="w-[18px] h-[18px] bg-amber-500 rounded-full flex items-center justify-center shrink-0">
+            <Coins size={11} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-sm font-bold tabular-nums text-slate-700">{watch('is_vip_live') ? '∞' : credits}</span>
           <span className="text-[10px] font-semibold text-clinical-navy uppercase tracking-wider">Créditos</span>
         </button>
       </div>
@@ -365,6 +369,11 @@ const App: React.FC = () => {
               verified: false
             }).select().single();
 
+            if (insertErr) {
+              console.error("ERROR CREATING PROFILE:", insertErr);
+              alert("Error al sincronizar tu perfil de Google con la base de datos de Supabase:\n" + insertErr.message + "\n(Revisa la consola para más detalles, verifica o desactiva las políticas RLS en la tabla profiles).");
+            }
+
             if (!insertErr && newProfile) {
               // We successfully created the profile.
               setValue('paid_credits_live', 0);
@@ -390,6 +399,9 @@ const App: React.FC = () => {
             setValue('paid_credits_live', profile.paid_credits || 0);
             setValue('free_vpos_used_today_live', profile.free_vpos_used_today || 0);
             setValue('is_vip_live', profile.plan_type === 'unlimited');
+            if (profile.plan_type === 'unlimited') {
+              setIsUnlocked(true);
+            }
             // Set doctor profile state
             setDoctorProfile({
               full_name: finalFullName,
@@ -837,8 +849,11 @@ const App: React.FC = () => {
                 <PatientInfo isLocked={isUnlocked} onNewPatient={() => {
                   const paidCredits = methods.getValues('paid_credits_live') ?? 0;
                   const freeUsed = methods.getValues('free_vpos_used_today_live') ?? 0;
+                  const isVIP = methods.getValues('is_vip_live') ?? false;
                   const remaining = paidCredits + (freeUsed < 1 ? 1 : 0);
-                  const msg = `⚠️ ¿Registrar nuevo paciente?\n\nEsta acción borrará todos los datos del paciente actual.\nCréditos disponibles: ${remaining} VPO${remaining !== 1 ? 's' : ''}`;
+                  const msg = isVIP
+                    ? "⚠️ ¿Registrar nuevo paciente?\n\nEsta acción borrará todos los datos del paciente actual."
+                    : `⚠️ ¿Registrar nuevo paciente?\n\nEsta acción borrará todos los datos del paciente actual.\nCréditos disponibles: ${remaining} VPO${remaining !== 1 ? 's' : ''}`;
                   if (confirm(msg)) {
                     localStorage.removeItem('vpo_current_data');
                     methods.reset({
@@ -850,7 +865,7 @@ const App: React.FC = () => {
                       matricula: methods.getValues('matricula'),
                       paid_credits_live: paidCredits,
                       free_vpos_used_today_live: freeUsed,
-                      is_vip_live: methods.getValues('is_vip_live'),
+                      is_vip_live: isVIP,
                       tipoCirugia: 'Electiva',
                       esUrgencia: false,
                       genero: Gender.MALE,
@@ -864,7 +879,7 @@ const App: React.FC = () => {
                       hasbled: 0, fragilidad_score: 1,
                       stopbang_total: 0, cancer_activo: false
                     });
-                    setIsUnlocked(false);
+                    setIsUnlocked(isVIP);
                     setActiveStep(0);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
@@ -887,7 +902,7 @@ const App: React.FC = () => {
                   {/* Preview Section: blurred until unlocked */}
                   <div className="lg:col-span-2 relative bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-[0_18px_45px_rgba(15,23,42,0.06)] border border-slate-100 w-full h-[600px] sm:h-[850px] overflow-auto scrollbar-thin scrollbar-thumb-slate-200 group transition-all duration-300">
                     {/* Lock overlay - only shown when NOT unlocked */}
-                    {!isUnlocked && (
+                    {!isUnlocked && !methods.getValues('is_vip_live') && (
                       <>
                         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
                           <div className="bg-white/92 backdrop-blur-md px-8 py-5 rounded-2xl border border-slate-100 shadow-[0_18px_55px_rgba(15,23,42,0.16)] flex flex-col items-center gap-2 transition-transform duration-300">
@@ -917,18 +932,21 @@ const App: React.FC = () => {
                         {/* Unified Account Status + Unlock Panel */}
                         {isUnlocked ? (
                           /* ----- UNLOCKED STATE ----- */
-                          <div className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4 rounded-2xl shadow-lg border border-emerald-400 flex items-center justify-between">
+                          /* ----- UNLOCKED STATE ----- */
+                          <div className="w-full bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/60 flex items-center justify-between group transition-all duration-300 hover:bg-emerald-50">
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center text-lg">✅</div>
-                              <div>
-                                <p className="font-black text-sm leading-none">VPO DESBLOQUEADO</p>
-                                <p className="text-[10px] opacity-80 font-bold mt-0.5">
+                              <div className="w-9 h-9 bg-emerald-100/80 rounded-full flex items-center justify-center text-emerald-600 shadow-inner">
+                                <CheckCircle2 size={20} className="text-emerald-600" strokeWidth={2.5} />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-bold text-[13px] text-emerald-900 tracking-tight leading-none mb-1">VPO Desbloqueado</span>
+                                <span className="text-[11px] font-medium text-emerald-600/80 leading-none">
                                   {methods.watch('is_vip_live') ? 'Acceso VIP • Ilimitado' : `${methods.watch('paid_credits_live') ?? 0} crédito${(methods.watch('paid_credits_live') ?? 0) !== 1 ? 's' : ''} restante${(methods.watch('paid_credits_live') ?? 0) !== 1 ? 's' : ''}`}
-                                </p>
+                                </span>
                               </div>
                             </div>
-                            <button onClick={openAccountModal} className="text-[10px] font-black bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition-colors">
-                              Mi Cuenta
+                            <button onClick={openAccountModal} className="text-[11px] font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg transition-colors">
+                              Cuenta
                             </button>
                           </div>
                         ) : (
@@ -937,29 +955,36 @@ const App: React.FC = () => {
                             {/* Compact credits info row */}
                             <button
                               onClick={openAccountModal}
-                              className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-200 hover:border-clinical-navy transition-all group text-left"
+                              className="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 hover:shadow transition-all group text-left"
                             >
-                              <span className="text-xs font-black text-slate-500 group-hover:text-clinical-navy transition-colors">
-                                {methods.watch('is_vip_live') ? (
-                                  <span className="flex items-center gap-1.5"><span className="bg-clinical-navy text-white text-[9px] px-1.5 py-0.5 rounded-full">VIP</span> Acceso Ilimitado</span>
-                                ) : (
-                                  <>💳 {methods.watch('paid_credits_live') ?? 0} VPOs pagados · {(methods.watch('free_vpos_used_today_live') ?? 0) < 1 ? '1 FREE' : 'sin cortesía'}</>
-                                )}
-                              </span>
-                              <span className="text-[9px] text-clinical-navy font-black opacity-0 group-hover:opacity-100 transition-opacity">Ver cuenta →</span>
+                              <div className="flex items-center gap-2">
+                                <Coins size={14} className="text-amber-500 shrink-0" strokeWidth={2.5} />
+                                <span className="text-[12px] font-semibold text-slate-600 group-hover:text-slate-800 transition-colors">
+                                  {methods.watch('is_vip_live') ? (
+                                    <span className="flex items-center gap-1.5"><span className="bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded-full">VIP</span> Acceso Ilimitado</span>
+                                  ) : (
+                                    <>{(methods.watch('paid_credits_live') ?? 0) + ((methods.watch('free_vpos_used_today_live') ?? 0) < 1 ? 1 : 0)} VPOs disponibles</>
+                                  )}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-slate-400 font-bold group-hover:text-slate-600 transition-colors flex items-center gap-0.5">Cuenta <ChevronRight size={12} strokeWidth={2} /></span>
                             </button>
 
                             {/* Main unlock button */}
                             <button
                               onClick={handleUnlockVPO}
                               disabled={isCheckingCredits}
-                              className={`w-full bg-clinical-navy text-white py-5 rounded-2xl font-black text-lg flex flex-col items-center justify-center gap-1 transition-all duration-200 shadow-xl shadow-clinical-navy/20 ${isCheckingCredits ? 'opacity-70 cursor-wait' : 'hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]'}`}>
+                              className={`w-full bg-slate-900 text-white py-4 mt-2 rounded-2xl font-bold text-[15px] flex flex-col items-center justify-center gap-1 transition-all duration-300 shadow-md shadow-slate-900/10 ${isCheckingCredits ? 'opacity-70 cursor-wait' : 'hover:scale-[1.02] hover:bg-slate-800 active:scale-[0.98]'}`}>
                               <div className="flex items-center gap-2">
-                                <ClipboardCheck size={24} />
-                                <span>DESBLOQUEAR VPO</span>
+                                <Unlock size={18} strokeWidth={2.5} />
+                                <span>Desbloquear Reporte</span>
                               </div>
-                              <span className="text-[10px] opacity-70 font-bold uppercase tracking-tighter">
-                                {(methods.watch('free_vpos_used_today_live') ?? 0) < 1 ? 'Usar cortesía gratuita del día' : `Usar 1 crédito (${methods.watch('paid_credits_live') ?? 0} disponibles)`}
+                              <span className="text-[10px] text-slate-300 font-medium tracking-wide">
+                                {methods.watch('is_vip_live')
+                                  ? 'Acceso VIP Ilimitado'
+                                  : (methods.watch('free_vpos_used_today_live') ?? 0) < 1
+                                    ? 'Usar cortesía gratuita del día'
+                                    : `Usar 1 crédito (${(methods.watch('paid_credits_live') ?? 0)} restantes)`}
                               </span>
                             </button>
                           </>
@@ -968,33 +993,32 @@ const App: React.FC = () => {
                         <button
                           onClick={handlePrintPDF}
                           disabled={isCheckingCredits}
-                          className={`w-full ${isUnlocked ? 'bg-clinical-navy' : 'bg-slate-300'} text-white py-4 rounded-2xl font-black text-lg flex flex-col items-center justify-center gap-1 transition-all duration-200 ${isUnlocked ? 'hover:scale-[1.02] hover:brightness-110' : 'cursor-not-allowed'} ${isCheckingCredits ? 'opacity-70 cursor-wait' : ''}`}>
-                          <div className="flex items-center gap-2">
-                            <Printer size={20} />
-                            <span>IMPRIMIR PDF</span>
-                          </div>
+                          className={`w-full ${isUnlocked ? 'bg-slate-900 border-transparent shadow-md shadow-slate-900/10' : 'bg-slate-100 border-slate-200 text-slate-400'} text-white py-4 rounded-[1.25rem] font-semibold text-[15px] flex items-center justify-center gap-2.5 transition-all duration-300 ${isUnlocked ? 'hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]' : 'cursor-not-allowed'} ${isCheckingCredits ? 'opacity-70 cursor-wait' : ''}`}>
+                          <Printer size={18} strokeWidth={2} className={isUnlocked ? 'text-white/90' : 'text-slate-400'} />
+                          <span>Imprimir PDF</span>
                         </button>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                           <button
                             onClick={handleDriveUpload}
-                            disabled={isUploading || isCheckingCredits}
-                            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all group ${isUnlocked ? 'border-slate-100 hover:border-clinical-navy hover:bg-slate-50' : 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'} ${isUploading ? 'cursor-wait' : ''}`}
+                            disabled={isUploading || isCheckingCredits || !isUnlocked}
+                            className={`flex flex-col items-center justify-center gap-1.5 py-4 rounded-[1.25rem] border transition-all duration-300 group ${isUnlocked ? 'bg-white border-slate-200/60 shadow-sm hover:border-slate-300 hover:shadow-md active:scale-95' : 'bg-slate-50 border-slate-100 opacity-60 cursor-not-allowed'} ${isUploading ? 'cursor-wait' : ''}`}
                           >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isUnlocked ? 'bg-slate-100 group-hover:bg-clinical-navy group-hover:text-white text-slate-600' : 'bg-slate-200 text-slate-400'}`}>
-                              {isUploading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isUnlocked ? 'bg-slate-50 group-hover:bg-slate-100 text-slate-700' : 'text-slate-400'}`}>
+                              {isUploading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} strokeWidth={2} />}
                             </div>
-                            <span className={`text-xs font-black uppercase ${isUnlocked ? 'text-slate-600 group-hover:text-clinical-navy' : 'text-slate-400'}`}>Drive</span>
+                            <span className={`text-[11px] font-bold tracking-wide ${isUnlocked ? 'text-slate-600' : 'text-slate-400'}`}>Drive</span>
                           </button>
 
                           <button
                             onClick={handleWhatsApp}
-                            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all group ${isUnlocked ? 'border-slate-100 hover:border-[#25D366] hover:bg-green-50' : 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'}`}
+                            disabled={!isUnlocked}
+                            className={`flex flex-col items-center justify-center gap-1.5 py-4 rounded-[1.25rem] border transition-all duration-300 group ${isUnlocked ? 'bg-white border-slate-200/60 shadow-sm hover:border-[#25D366]/30 hover:shadow-md hover:shadow-[#25D366]/5 active:scale-95' : 'bg-slate-50 border-slate-100 opacity-60 cursor-not-allowed'}`}
                           >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isUnlocked ? 'bg-slate-100 group-hover:bg-[#25D366] group-hover:text-white text-slate-600' : 'bg-slate-200 text-slate-400'}`}>
-                              <MessageCircle size={20} />
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isUnlocked ? 'bg-slate-50 group-hover:bg-[#25D366]/10 text-[#25D366]' : 'text-slate-400'}`}>
+                              <MessageCircle size={18} strokeWidth={2} />
                             </div>
-                            <span className={`text-xs font-black uppercase ${isUnlocked ? 'text-slate-600 group-hover:text-[#25D366]' : 'text-slate-400'}`}>WhatsApp</span>
+                            <span className={`text-[11px] font-bold tracking-wide ${isUnlocked ? 'text-slate-600 group-hover:text-[#25D366]' : 'text-slate-400'}`}>WhatsApp</span>
                           </button>
                         </div>
                       </div>
@@ -1013,8 +1037,9 @@ const App: React.FC = () => {
             </main>
           </div>
           {activeStep === 7 && (
-            <button onClick={handleCopyNote} className="fixed bottom-24 right-4 bg-green-600/95 backdrop-blur text-white px-4 py-3 rounded-full shadow-[0_18px_45px_rgba(22,163,74,0.55)] z-40 flex items-center gap-2 transition-transform duration-200 hover:scale-105 active:scale-95">
-              <Copy size={24} /><span className="hidden md:inline font-bold">Copiar Texto</span>
+            <button onClick={handleCopyNote} className="fixed bottom-24 right-6 bg-white/80 backdrop-blur-xl border border-white/40 text-slate-800 px-5 py-3.5 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-40 flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]">
+              <div className="bg-slate-100/80 p-1.5 rounded-full"><Copy size={16} strokeWidth={2} className="text-slate-700" /></div>
+              <span className="hidden md:inline font-semibold text-[14px]">Copiar Texto</span>
             </button>
           )}
         </div>

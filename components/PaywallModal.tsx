@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     CreditCard, X, ShieldCheck, Zap, Loader2, Star,
     Gift, Calendar, CheckCircle, Lock, Sparkles, TrendingUp,
-    Award, FileText, Package, Rocket, Crown, Building2
+    Award, FileText, Package, Rocket, Crown, Building2, Coins
 } from 'lucide-react';
 import { supabase } from '../utils/supabase';
 
@@ -20,6 +20,8 @@ interface Profile {
     free_vpos_used_today: number;
     plan_type: string;
     last_vpo_date: string | null;
+    verified: boolean;
+    verification_status: string;
 }
 
 // ─── Package Card ────────────────────────────────────────────────────────────
@@ -131,12 +133,14 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, mode = 'pa
 
             const { data } = await supabase
                 .from('profiles')
-                .select('paid_credits, free_vpos_used_today, plan_type, last_vpo_date')
+                .select('paid_credits, free_vpos_used_today, plan_type, last_vpo_date, verified, verification_status')
                 .eq('id', user.id)
                 .single();
 
-            if (data) setProfile(data);
-            setIsVIP(user.email === 'mcfidel98@gmail.com');
+            if (data) {
+                setProfile(data);
+                setIsVIP(data.plan_type === 'unlimited');
+            }
         } catch (err) {
             console.error('Error fetching profile:', err);
         }
@@ -211,8 +215,8 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, mode = 'pa
                     </button>
 
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm shadow-cyan-500/20">
-                            <Sparkles size={20} className="text-white" strokeWidth={1.5} />
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-sm shadow-amber-500/20">
+                            <Coins size={20} className="text-white" strokeWidth={1.5} />
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-slate-800 tracking-tight leading-tight">VPO Digital</h2>
@@ -224,15 +228,17 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, mode = 'pa
                     <div className="flex flex-wrap gap-2">
                         <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200 text-[11px] font-medium text-slate-600">
                             <CreditCard size={12} className="text-cyan-500" />
-                            <span>{isVIP ? '∞' : paidCredits} créditos pagados</span>
+                            <span>{isVIP ? '∞' : paidCredits} créditos disponibles</span>
                         </div>
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-medium
-                            ${hasFreeToday
-                                ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
-                                : 'bg-red-50 border-red-200 text-red-500'}`}
+                            ${isVIP
+                                ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                : hasFreeToday
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                                    : 'bg-red-50 border-red-200 text-red-500'}`}
                         >
                             <Gift size={12} />
-                            <span>{hasFreeToday ? '1 VPO gratis disponible' : '0 VPO gratis — cortesía usada'}</span>
+                            <span>{isVIP ? '∞ VPO gratis' : hasFreeToday ? '1 VPO gratis disponible' : '0 VPO gratis — cortesía usada'}</span>
                         </div>
                     </div>
                 </div>
@@ -274,32 +280,42 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, mode = 'pa
                                     </p>
                                 </div>
                                 <div className={`rounded-2xl p-4 border text-center
-                                    ${hasFreeToday
-                                        ? 'bg-emerald-50/50 border-emerald-200/60'
-                                        : 'bg-red-50/50 border-red-200/60'}`}
+                                    ${isVIP
+                                        ? 'bg-slate-50/50 border-slate-200/60'
+                                        : hasFreeToday
+                                            ? 'bg-emerald-50/50 border-emerald-200/60'
+                                            : 'bg-red-50/50 border-red-200/60'}`}
                                 >
-                                    <p className={`text-3xl font-bold tabular-nums ${hasFreeToday ? 'text-emerald-600' : 'text-red-500'}`}>
-                                        {hasFreeToday ? '1' : '0'}
+                                    <p className={`text-3xl font-bold tabular-nums ${isVIP ? 'text-slate-800' : hasFreeToday ? 'text-emerald-600' : 'text-red-500'}`}>
+                                        {isVIP ? '∞' : hasFreeToday ? '1' : '0'}
                                     </p>
-                                    <p className={`text-[11px] font-medium mt-1 ${hasFreeToday ? 'text-slate-400' : 'text-red-400'}`}>
-                                        VPO gratis hoy
+                                    <p className={`text-[11px] font-medium mt-1 ${isVIP ? 'text-slate-400' : hasFreeToday ? 'text-slate-400' : 'text-red-400'}`}>
+                                        VPOs gratis
                                     </p>
                                 </div>
                             </div>
 
                             {/* Status items */}
-                            {[
-                                { icon: Calendar, label: 'Último VPO generado', value: profile?.last_vpo_date ? new Date(profile.last_vpo_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca', color: 'text-slate-500' },
-                                { icon: CheckCircle, label: 'Estado de cuenta', value: 'Activa y verificada', color: 'text-emerald-500' },
-                            ].map(({ icon: Icon, label, value, color }) => (
-                                <div key={label} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80">
-                                    <div className="flex items-center gap-2.5">
-                                        <Icon size={15} className={color} strokeWidth={1.5} />
-                                        <span className="text-[12px] font-medium text-slate-500">{label}</span>
+                            {(() => {
+                                const isVerified = profile?.verified || profile?.verification_status === 'approved';
+                                return [
+                                    { icon: Calendar, label: 'Último VPO generado', value: profile?.last_vpo_date ? new Date(profile.last_vpo_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca', color: 'text-slate-500' },
+                                    {
+                                        icon: isVerified ? CheckCircle : X,
+                                        label: 'Estado de cuenta',
+                                        value: isVerified ? 'Verificada' : 'No verificada',
+                                        color: isVerified ? 'text-emerald-500' : 'text-red-500'
+                                    },
+                                ].map(({ icon: Icon, label, value, color }) => (
+                                    <div key={label} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80">
+                                        <div className="flex items-center gap-2.5">
+                                            <Icon size={15} className={color} strokeWidth={1.5} />
+                                            <span className="text-[12px] font-medium text-slate-500">{label}</span>
+                                        </div>
+                                        <span className={`text-[12px] font-semibold ${color}`}>{value}</span>
                                     </div>
-                                    <span className={`text-[12px] font-semibold ${color}`}>{value}</span>
-                                </div>
-                            ))}
+                                ));
+                            })()}
 
                             <button
                                 onClick={() => setTab('buy')}

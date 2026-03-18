@@ -81,7 +81,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onBack }) => {
         clearMessages();
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/reset-password`,
+                redirectTo: `${window.location.origin}/`,
             });
             if (error) throw error;
             setSuccess('Si el correo existe, recibirás un enlace para restablecer tu contraseña.');

@@ -534,261 +534,261 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
             {/* CARD — starts here */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
 
-            {/* PHYSICIAN SECTION */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 p-5 border-b border-slate-100 bg-slate-50/20">
-                <div>
-                    <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Médico que realizó</label>
-                    <input {...register('elaboro')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" placeholder="Nombre completo..." />
-                </div>
-                <div>
-                    <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Matrícula / Cédula</label>
-                    <input {...register('matricula')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" />
-                </div>
-                <div>
-                    <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Médico Residente</label>
-                    <input {...register('residente')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" placeholder="Nombre completo..." />
-                </div>
-                <div>
-                    <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Matrícula (Residente)</label>
-                    <input {...register('residente_matricula')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" />
-                </div>
-            </div>
-
-            {/* INDICATORS / METAS GLOBALES */}
-            <div className="bg-slate-50/50 p-4 flex flex-col lg:flex-row justify-between items-center gap-4 px-8 border-b border-slate-100 relative">
-
-                {/* EXPLANATION OVERLAY / POPOVER */}
-                {selectedGoal && (
-                    <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-50 flex items-center justify-between px-8 rounded-sm">
-                        <div className="flex items-center gap-6 max-w-4xl">
-                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                                {selectedGoal === 'bp' && <Activity className="text-emerald-500" size={24} />}
-                                {selectedGoal === 'glu' && <Syringe className="text-blue-500" size={24} />}
-                                {selectedGoal === 'hb' && <HeartPulse className="text-rose-500" size={24} />}
-                                {selectedGoal === 'uresis' && <Droplets className="text-cyan-500" size={24} />}
-                            </div>
-                            <div>
-                                <h4 className="text-[13px] font-semibold text-slate-800 mb-1">
-                                    Justificación: {selectedGoal === 'bp' ? 'Tensión Arterial' : selectedGoal === 'glu' ? 'Glucosa' : selectedGoal === 'hb' ? 'Hemoglobina' : 'Gasto Urinario'}
-                                </h4>
-                                <p className="text-[12px] text-slate-500 leading-relaxed max-w-2xl">
-                                    {selectedGoal === 'hb' && "Mantener Hb > 8.0 g/dL en pacientes sanos y > 10.0 g/dL en pacientes con reserva cardiovascular limitada (ICC, Isquemia, Edad > 75) para asegurar el aporte de oxígeno tisular (DO2) y evitar isquemia perioperatoria. (Guía ESAIC/ASA)"}
-                                    {selectedGoal === 'bp' && "Mantener la PAM dentro del 20% de la basal. Objetivos más estrictos (<130/80) en pacientes con ERC o DM descontrolada para protección de órgano blanco y reducción de riesgo de evento cerebral. (Guía ACC/AHA)"}
-                                    {selectedGoal === 'glu' && "En pacientes con diabetes, el rango 140-180 mg/dL equilibra la prevención de hipoglucemia con la reducción del riesgo de infección de sitio quirúrgico. En no diabéticos, mantener < 140 mg/dL. (Guía ADA/NICE)"}
-                                    {selectedGoal === 'uresis' && "El gasto urinario ≥ 0.5 ml/kg/h es un indicador fundamental de la perfusión renal y estado de volumen. La oliguria persistente sugiere hipovolemia o daño renal agudo incipiente. (Guía KDIGO)"}
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => setSelectedGoal(null)}
-                            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
-                        >
-                            <X size={18} strokeWidth={1.5} />
-                        </button>
+                {/* PHYSICIAN SECTION */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 p-5 border-b border-slate-100 bg-slate-50/20">
+                    <div>
+                        <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Médico que realizó</label>
+                        <input {...register('elaboro')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" placeholder="Nombre completo..." />
                     </div>
-                )}
+                    <div>
+                        <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Matrícula / Cédula</label>
+                        <input {...register('matricula')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" />
+                    </div>
+                    <div>
+                        <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Médico Residente</label>
+                        <input {...register('residente')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" placeholder="Nombre completo..." />
+                    </div>
+                    <div>
+                        <label className="block text-[12px] font-semibold text-slate-500 mb-1.5">Matrícula (Residente)</label>
+                        <input {...register('residente_matricula')} className="w-full bg-white border-slate-200 rounded-lg text-[13px] px-3 py-2 border hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-all" />
+                    </div>
+                </div>
 
-                {(() => {
-                    const targets = getGlobalTargets();
-                    return (
-                        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-medium text-slate-400 mb-0.5">Indicadores</span>
-                                <h4 className="text-[13px] font-semibold text-slate-800">Metas Globales</h4>
-                            </div>
+                {/* INDICATORS / METAS GLOBALES */}
+                <div className="bg-slate-50/50 p-4 flex flex-col lg:flex-row justify-between items-center gap-4 px-8 border-b border-slate-100 relative">
 
-                            <div className="h-8 w-px bg-slate-200 hidden lg:block" />
-
-                            {/* BP Indicator */}
-                            <div
-                                onClick={() => setSelectedGoal('bp')}
-                                className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                            >
-                                <div className={`p-1.5 rounded-lg border transition-colors ${targets.bp.isOk ? 'bg-emerald-50 border-emerald-200 text-emerald-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
-                                    <Activity size={16} />
+                    {/* EXPLANATION OVERLAY / POPOVER */}
+                    {selectedGoal && (
+                        <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-50 flex items-center justify-between px-8 rounded-sm">
+                            <div className="flex items-center gap-6 max-w-4xl">
+                                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                    {selectedGoal === 'bp' && <Activity className="text-emerald-500" size={24} />}
+                                    {selectedGoal === 'glu' && <Syringe className="text-blue-500" size={24} />}
+                                    {selectedGoal === 'hb' && <HeartPulse className="text-rose-500" size={24} />}
+                                    {selectedGoal === 'uresis' && <Droplets className="text-cyan-500" size={24} />}
                                 </div>
+                                <div>
+                                    <h4 className="text-[13px] font-semibold text-slate-800 mb-1">
+                                        Justificación: {selectedGoal === 'bp' ? 'Tensión Arterial' : selectedGoal === 'glu' ? 'Glucosa' : selectedGoal === 'hb' ? 'Hemoglobina' : 'Gasto Urinario'}
+                                    </h4>
+                                    <p className="text-[12px] text-slate-500 leading-relaxed max-w-2xl">
+                                        {selectedGoal === 'hb' && "Mantener Hb > 8.0 g/dL en pacientes sanos y > 10.0 g/dL en pacientes con reserva cardiovascular limitada (ICC, Isquemia, Edad > 75) para asegurar el aporte de oxígeno tisular (DO2) y evitar isquemia perioperatoria. (Guía ESAIC/ASA)"}
+                                        {selectedGoal === 'bp' && "Mantener la PAM dentro del 20% de la basal. Objetivos más estrictos (<130/80) en pacientes con ERC o DM descontrolada para protección de órgano blanco y reducción de riesgo de evento cerebral. (Guía ACC/AHA)"}
+                                        {selectedGoal === 'glu' && "En pacientes con diabetes, el rango 140-180 mg/dL equilibra la prevención de hipoglucemia con la reducción del riesgo de infección de sitio quirúrgico. En no diabéticos, mantener < 140 mg/dL. (Guía ADA/NICE)"}
+                                        {selectedGoal === 'uresis' && "El gasto urinario ≥ 0.5 ml/kg/h es un indicador fundamental de la perfusión renal y estado de volumen. La oliguria persistente sugiere hipovolemia o daño renal agudo incipiente. (Guía KDIGO)"}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedGoal(null)}
+                                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
+                            >
+                                <X size={18} strokeWidth={1.5} />
+                            </button>
+                        </div>
+                    )}
+
+                    {(() => {
+                        const targets = getGlobalTargets();
+                        return (
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
                                 <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5 mb-1">
-                                        <span className="text-[10px] font-medium text-slate-400 leading-none">Tensión Arterial</span>
-                                        <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                    <span className="text-[10px] font-medium text-slate-400 mb-0.5">Indicadores</span>
+                                    <h4 className="text-[13px] font-semibold text-slate-800">Metas Globales</h4>
+                                </div>
+
+                                <div className="h-8 w-px bg-slate-200 hidden lg:block" />
+
+                                {/* BP Indicator */}
+                                <div
+                                    onClick={() => setSelectedGoal('bp')}
+                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                >
+                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.bp.isOk ? 'bg-emerald-50 border-emerald-200 text-emerald-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
+                                        <Activity size={16} />
                                     </div>
-                                    <div className="flex items-baseline gap-1.5">
-                                        <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.bp.label}</span>
-                                        {targets.bp.current.sys > 0 && (
-                                            <span className={`text-[10px] font-semibold ${targets.bp.isOk ? 'text-emerald-500' : 'text-red-500'}`}>
-                                                (Real: {targets.bp.current.sys}/{targets.bp.current.dia})
-                                            </span>
-                                        )}
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Tensión Arterial</span>
+                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                        </div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.bp.label}</span>
+                                            {targets.bp.current.sys > 0 && (
+                                                <span className={`text-[10px] font-semibold ${targets.bp.isOk ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                    (Real: {targets.bp.current.sys}/{targets.bp.current.dia})
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Glucose Indicator */}
+                                <div
+                                    onClick={() => setSelectedGoal('glu')}
+                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                >
+                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.glu.isOk ? 'bg-blue-50 border-blue-200 text-blue-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
+                                        <Syringe size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Glucosa Central</span>
+                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                        </div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.glu.label}</span>
+                                            {targets.glu.current > 0 && (
+                                                <span className={`text-[10px] font-semibold ${targets.glu.isOk ? 'text-blue-500' : 'text-red-500'}`}>
+                                                    (Real: {targets.glu.current})
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Hemoglobin Indicator */}
+                                <div
+                                    onClick={() => setSelectedGoal('hb')}
+                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                >
+                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.hb.isOk ? 'bg-rose-50 border-rose-200 text-rose-500' : 'bg-orange-50 border-orange-200 text-orange-500'}`}>
+                                        <HeartPulse size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Hemoglobina (Target)</span>
+                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                        </div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.hb.label}</span>
+                                            {targets.hb.current > 0 && (
+                                                <span className={`text-[10px] font-semibold ${targets.hb.isOk ? 'text-slate-500' : 'text-red-500 animate-pulse'}`}>
+                                                    (Real: {targets.hb.current})
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Uresis Indicator */}
+                                <div
+                                    onClick={() => setSelectedGoal('uresis')}
+                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                >
+                                    <div className="bg-cyan-50 p-1.5 rounded-lg border border-cyan-200 text-cyan-500">
+                                        <Droplets size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Uresis (Gasto)</span>
+                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                        </div>
+                                        <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">≥ 0.5 <span className="text-[10px] text-slate-400 font-medium ml-1">ml/kg/h</span></span>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Glucose Indicator */}
-                            <div
-                                onClick={() => setSelectedGoal('glu')}
-                                className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                            >
-                                <div className={`p-1.5 rounded-lg border transition-colors ${targets.glu.isOk ? 'bg-blue-50 border-blue-200 text-blue-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
-                                    <Syringe size={16} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5 mb-1">
-                                        <span className="text-[10px] font-medium text-slate-400 leading-none">Glucosa Central</span>
-                                        <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
-                                    </div>
-                                    <div className="flex items-baseline gap-1.5">
-                                        <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.glu.label}</span>
-                                        {targets.glu.current > 0 && (
-                                            <span className={`text-[10px] font-semibold ${targets.glu.isOk ? 'text-blue-500' : 'text-red-500'}`}>
-                                                (Real: {targets.glu.current})
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Hemoglobin Indicator */}
-                            <div
-                                onClick={() => setSelectedGoal('hb')}
-                                className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                            >
-                                <div className={`p-1.5 rounded-lg border transition-colors ${targets.hb.isOk ? 'bg-rose-50 border-rose-200 text-rose-500' : 'bg-orange-50 border-orange-200 text-orange-500'}`}>
-                                    <HeartPulse size={16} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5 mb-1">
-                                        <span className="text-[10px] font-medium text-slate-400 leading-none">Hemoglobina (Target)</span>
-                                        <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
-                                    </div>
-                                    <div className="flex items-baseline gap-1.5">
-                                        <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.hb.label}</span>
-                                        {targets.hb.current > 0 && (
-                                            <span className={`text-[10px] font-semibold ${targets.hb.isOk ? 'text-slate-500' : 'text-red-500 animate-pulse'}`}>
-                                                (Real: {targets.hb.current})
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Uresis Indicator */}
-                            <div
-                                onClick={() => setSelectedGoal('uresis')}
-                                className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                            >
-                                <div className="bg-cyan-50 p-1.5 rounded-lg border border-cyan-200 text-cyan-500">
-                                    <Droplets size={16} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5 mb-1">
-                                        <span className="text-[10px] font-medium text-slate-400 leading-none">Uresis (Gasto)</span>
-                                        <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
-                                    </div>
-                                    <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">≥ 0.5 <span className="text-[10px] text-slate-400 font-medium ml-1">ml/kg/h</span></span>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })()}
-            </div>
-
-            {/* VERTICAL STACKED LAYOUT */}
-            <div className="p-5 flex flex-col gap-4">
-
-                {/* SECTION 1: PRE-QX */}
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 px-1">
-                        <Stethoscope size={14} className="text-slate-400" strokeWidth={1.5} />
-                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Pre-Quirúrgico</span>
-                    </div>
-                    <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="p-4 flex flex-col relative">
-                        {!isUnlocked && (
-                            <div
-                                onClick={onRequestUnlock}
-                                className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
-                            >
-                                <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
-                                <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
-                            </div>
-                        )}
-                        <textarea
-                            {...register('plan_pre')}
-                            readOnly={!isUnlocked}
-                            className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${!isUnlocked ? 'cursor-not-allowed select-none' : ''
-                                }`}
-                            placeholder="Ayuno, Soluciones, Antibóticos..."
-                        />
-                        <div className="mt-2 p-2.5 bg-cyan-50/30 rounded-lg border border-cyan-200/40">
-                            <p className="text-[11px] text-cyan-600 font-medium flex items-center gap-1.5"><Info size={12} strokeWidth={1.5} /> Sugerencia: ASHP/IDSA 2024</p>
-                        </div>
-                    </div>
-                    </div>
+                        );
+                    })()}
                 </div>
 
-                {/* SECTION 2: TRANS-QX */}
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 px-1">
-                        <HeartPulse size={14} className="text-slate-400" strokeWidth={1.5} />
-                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Trans-Quirúrgico</span>
-                    </div>
-                    <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="p-4 flex flex-col relative">
-                        {!isUnlocked && (
-                            <div
-                                onClick={onRequestUnlock}
-                                className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
-                            >
-                                <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
-                                <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
+                {/* VERTICAL STACKED LAYOUT */}
+                <div className="p-5 flex flex-col gap-4">
+
+                    {/* SECTION 1: PRE-QX */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 px-1">
+                            <Stethoscope size={14} className="text-slate-400" strokeWidth={1.5} />
+                            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Pre-Quirúrgico</span>
+                        </div>
+                        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="p-4 flex flex-col relative">
+                                {(!isUnlocked && !watch('is_vip_live')) && (
+                                    <div
+                                        onClick={onRequestUnlock}
+                                        className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
+                                    >
+                                        <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
+                                        <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
+                                    </div>
+                                )}
+                                <textarea
+                                    {...register('plan_pre')}
+                                    readOnly={!isUnlocked && !watch('is_vip_live')}
+                                    className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${(!isUnlocked && !watch('is_vip_live')) ? 'cursor-not-allowed select-none' : ''
+                                        }`}
+                                    placeholder="Ayuno, Soluciones, Antibóticos..."
+                                />
+                                <div className="mt-2 p-2.5 bg-cyan-50/30 rounded-lg border border-cyan-200/40">
+                                    <p className="text-[11px] text-cyan-600 font-medium flex items-center gap-1.5"><Info size={12} strokeWidth={1.5} /> Sugerencia: ASHP/IDSA 2024</p>
+                                </div>
                             </div>
-                        )}
-                        <textarea
-                            {...register('plan_trans')}
-                            readOnly={!isUnlocked}
-                            className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${!isUnlocked ? 'cursor-not-allowed select-none' : ''
-                                }`}
-                            placeholder="Metas hemodinámicas, Esquema Insulina..."
-                        />
-                        <div className="mt-2 p-2.5 bg-amber-50/30 rounded-lg border border-amber-200/40">
-                            <p className="text-[11px] text-amber-600 font-medium flex items-center gap-1.5"><Activity size={12} strokeWidth={1.5} /> Meta: GDFT (Goal Directed)</p>
                         </div>
                     </div>
-                    </div>
-                </div>
 
-                {/* SECTION 3: POST-QX */}
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 px-1">
-                        <BedDouble size={14} className="text-slate-400" strokeWidth={1.5} />
-                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Post-Quirúrgico</span>
-                    </div>
-                    <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="p-4 flex flex-col relative">
-                        {!isUnlocked && (
-                            <div
-                                onClick={onRequestUnlock}
-                                className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
-                            >
-                                <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
-                                <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
+                    {/* SECTION 2: TRANS-QX */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 px-1">
+                            <HeartPulse size={14} className="text-slate-400" strokeWidth={1.5} />
+                            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Trans-Quirúrgico</span>
+                        </div>
+                        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="p-4 flex flex-col relative">
+                                {(!isUnlocked && !watch('is_vip_live')) && (
+                                    <div
+                                        onClick={onRequestUnlock}
+                                        className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
+                                    >
+                                        <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
+                                        <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
+                                    </div>
+                                )}
+                                <textarea
+                                    {...register('plan_trans')}
+                                    readOnly={!isUnlocked && !watch('is_vip_live')}
+                                    className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${(!isUnlocked && !watch('is_vip_live')) ? 'cursor-not-allowed select-none' : ''
+                                        }`}
+                                    placeholder="Metas hemodinámicas, Esquema Insulina..."
+                                />
+                                <div className="mt-2 p-2.5 bg-amber-50/30 rounded-lg border border-amber-200/40">
+                                    <p className="text-[11px] text-amber-600 font-medium flex items-center gap-1.5"><Activity size={12} strokeWidth={1.5} /> Meta: GDFT (Goal Directed)</p>
+                                </div>
                             </div>
-                        )}
-                        <textarea
-                            {...register('plan_post')}
-                            readOnly={!isUnlocked}
-                            className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${!isUnlocked ? 'cursor-not-allowed select-none' : ''
-                                }`}
-                            placeholder="Reinicio V.O., Tromboprofilaxis, Alta..."
-                        />
-                        <div className="mt-2 p-2.5 bg-emerald-50/30 rounded-lg border border-emerald-200/40">
-                            <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5"><Check size={12} strokeWidth={1.5} /> Alta sugerida: Protocolo ERAS</p>
                         </div>
                     </div>
-                    </div>
-                </div>
 
-            </div>
+                    {/* SECTION 3: POST-QX */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 px-1">
+                            <BedDouble size={14} className="text-slate-400" strokeWidth={1.5} />
+                            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Post-Quirúrgico</span>
+                        </div>
+                        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="p-4 flex flex-col relative">
+                                {(!isUnlocked && !watch('is_vip_live')) && (
+                                    <div
+                                        onClick={onRequestUnlock}
+                                        className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center gap-2 cursor-pointer rounded-b-2xl transition-colors hover:bg-white/80"
+                                    >
+                                        <Lock size={18} className="text-slate-300" strokeWidth={1.5} />
+                                        <span className="text-[11px] font-medium text-slate-400">Desbloquear VPO para editar</span>
+                                    </div>
+                                )}
+                                <textarea
+                                    {...register('plan_post')}
+                                    readOnly={!isUnlocked && !watch('is_vip_live')}
+                                    className={`w-full min-h-[160px] bg-transparent border-none resize-none text-[13px] leading-relaxed focus:ring-0 p-2 text-slate-700 font-medium placeholder:text-slate-400 placeholder:italic ${(!isUnlocked && !watch('is_vip_live')) ? 'cursor-not-allowed select-none' : ''
+                                        }`}
+                                    placeholder="Reinicio V.O., Tromboprofilaxis, Alta..."
+                                />
+                                <div className="mt-2 p-2.5 bg-emerald-50/30 rounded-lg border border-emerald-200/40">
+                                    <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5"><Check size={12} strokeWidth={1.5} /> Alta sugerida: Protocolo ERAS</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
             </div>{/* end card */}
         </div>
