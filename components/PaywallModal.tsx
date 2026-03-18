@@ -175,14 +175,32 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, mode = 'pa
             }
 
             // Fallback: abrir Payment Link directo de Stripe
-            const link = paymentLinks[priceId];
-            if (link) window.open(link, '_blank');
+            let link = paymentLinks[priceId];
+            if (link) {
+                // Pre-fill user data so Stripe Webhook knows who to credit
+                const { data: authData } = await supabase.auth.getUser();
+                if (authData?.user) {
+                    link += `?client_reference_id=${authData.user.id}`;
+                    if (authData.user.email) {
+                        link += `&prefilled_email=${encodeURIComponent(authData.user.email)}`;
+                    }
+                }
+                window.location.href = link;
+                return;
+            }
         } catch (error) {
             console.error('Error creating checkout session:', error);
             // Fallback garantizado: abrir Payment Link de Stripe directamente
-            const link = paymentLinks[priceId];
+            let link = paymentLinks[priceId];
             if (link) {
-                window.open(link, '_blank');
+                const { data: authData } = await supabase.auth.getUser();
+                if (authData?.user) {
+                    link += `?client_reference_id=${authData.user.id}`;
+                    if (authData.user.email) {
+                        link += `&prefilled_email=${encodeURIComponent(authData.user.email)}`;
+                    }
+                }
+                window.location.href = link;
             } else {
                 alert('Ocurrió un error. Contacta soporte: mcfidel98@gmail.com');
             }
