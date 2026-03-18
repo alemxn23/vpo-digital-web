@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// Trigger new Vercel production build
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, FormProvider, useFormContext } from 'react-hook-form';
 import { VPOData, Gender } from './types';
 import { jsPDF } from 'jspdf';
