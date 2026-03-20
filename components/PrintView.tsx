@@ -14,30 +14,30 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
     const getPrintedAlerts = () => {
         const alerts: string[] = [];
         if (data.esUrgencia) {
-            alerts.push('⚠️ CIRUGÍA DE URGENCIA: Ayuno no garantizado. Considerar IRS. +4 Goldman / +10 Detsky / +8 ARISCAT / ASA-E.');
+            alerts.push('CIRUGÍA DE URGENCIA: Ayuno no garantizado. Considerar IRS. +4 Goldman / +10 Detsky / +8 ARISCAT / ASA-E.');
         }
-        if (data.ecg_isquemia) alerts.push('⚡ ECG: Isquemia/Necrosis activa. Optimizar tratamiento antiisquémico previo.');
-        if (data.ecg_brihh_completo) alerts.push('⚡ ECG: BRIHH Completo. Vigilar intraoperatorio. Riesgo de bloqueo con catéter.');
-        if (data.ecg_extrasistoles) alerts.push('⚡ ECG: >5 Extrasístoles Ventriculares/min. Corregir electrolitos (K+, Mg²⁺).');
-        if (data.ecg_ritmo_especifico === 'FA') alerts.push('⚡ FA: Verificar anticoagulación. Control FC <100 lpm.');
-        if (data.ecg_ritmo_especifico === 'Marcapasos') alerts.push('⚡ Marcapasos: Usar bisturí bipolar. Tener imán disponible.');
-        if (data.ecg_bloqueo === 'Mobitz_II') alerts.push('⚡ Bloqueo Mobitz II: Valorar MP temporal con Cardiología.');
-        if (data.ecg_bloqueo === '3er_Grado') alerts.push('⚡ BLOQUEO COMPLETO: Requiere MP temporal definitivo antes de CX electiva.');
+        if (data.ecg_isquemia) alerts.push('ECG: Isquemia/Necrosis activa. Optimizar tratamiento antiisquémico previo.');
+        if (data.ecg_brihh_completo) alerts.push('ECG: BRIHH Completo. Vigilar intraoperatorio. Riesgo de bloqueo con catéter.');
+        if (data.ecg_extrasistoles) alerts.push('ECG: >5 Extrasístoles Ventriculares/min. Corregir electrolitos (K+, Mg²⁺).');
+        if (data.ecg_ritmo_especifico === 'FA') alerts.push('FA: Verificar anticoagulación. Control FC <100 lpm.');
+        if (data.ecg_ritmo_especifico === 'Marcapasos') alerts.push('Marcapasos: Usar bisturí bipolar. Tener imán disponible.');
+        if (data.ecg_bloqueo === 'Mobitz_II') alerts.push('Bloqueo Mobitz II: Valorar MP temporal con Cardiología.');
+        if (data.ecg_bloqueo === '3er_Grado') alerts.push('BLOQUEO COMPLETO: Requiere MP temporal definitivo antes de CX electiva.');
         const sys = data.taSistolica || 0;
         const fc = data.fc || 0;
         const sato2 = data.sato2 || 0;
         const k = data.k || 0;
         const hb = data.hb || 0;
         const plaq = data.plaquetas || 0;
-        if (sys > 180) alerts.push(`⚠️ HTA Severa (${sys} mmHg): Optimizar control tensional. Meta <160 mmHg.`);
-        if (fc > 100) alerts.push(`⚠️ Taquicardia (${fc} lpm): Investigar causa. Meta <100 lpm.`);
-        if (sato2 > 0 && sato2 < 90) alerts.push(`⚠️ Hipoxemia Severa (SpO2 ${sato2}%): Optimizar función respiratoria previo a CX.`);
-        if (k > 0 && k < 3.0) alerts.push(`⚠️ Hipocalemia (K⁺ ${k} mEq/L): Corregir previo a CX. Riesgo de arritmias.`);
-        if (k > 0 && k > 5.5) alerts.push(`⚠️ Hipercalemia (K⁺ ${k} mEq/L): Corregir antes del procedimiento.`);
-        if (hb > 0 && hb < 8.0) alerts.push(`⚠️ Anemia Severa (Hb ${hb} g/dL). Considerar transfusión si Hb <7.0 g/dL.`);
-        if (plaq > 0 && plaq < 100) alerts.push(`⚠️ Trombocitopenia (${plaq}k): Riesgo hemorrágico elevado.`);
-        if (data.exploracion_estenosis_aortica || data.flag_estenosis_aortica_severa) alerts.push('🩺 Estenosis Aórtica Severa: Mantener precarga/RVS. Evitar hipotensión.');
-        if (data.exploracion_soplo_carotideo) alerts.push('🩺 Soplo Carotídeo: Mantener PAM estable. Considerar dúplex.');
+        if (sys > 180) alerts.push(`HTA Severa (${sys} mmHg): Optimizar control tensional. Meta <160 mmHg.`);
+        if (fc > 100) alerts.push(`Taquicardia (${fc} lpm): Investigar causa. Meta <100 lpm.`);
+        if (sato2 > 0 && sato2 < 90) alerts.push(`Hipoxemia Severa (SpO2 ${sato2}%): Optimizar función respiratoria previo a CX.`);
+        if (k > 0 && k < 3.0) alerts.push(`Hipocalemia (K⁺ ${k} mEq/L): Corregir previo a CX. Riesgo de arritmias.`);
+        if (k > 0 && k > 5.5) alerts.push(`Hipercalemia (K⁺ ${k} mEq/L): Corregir antes del procedimiento.`);
+        if (hb > 0 && hb < 8.0) alerts.push(`Anemia Severa (Hb ${hb} g/dL). Considerar transfusión si Hb <7.0 g/dL.`);
+        if (plaq > 0 && plaq < 100) alerts.push(`Trombocitopenia (${plaq}k): Riesgo hemorrágico elevado.`);
+        if (data.exploracion_estenosis_aortica || data.flag_estenosis_aortica_severa) alerts.push('Estenosis Aórtica Severa: Mantener precarga/RVS. Evitar hipotensión.');
+        if (data.exploracion_soplo_carotideo) alerts.push('Soplo Carotídeo: Mantener PAM estable. Considerar dúplex.');
         return alerts;
     };
     const printedAlerts = getPrintedAlerts();
@@ -242,7 +242,7 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
                                             <td align="right">
                                                 {(data.exploracion_ingurgitacion || data.exploracion_s3 || data.exploracion_estertores || data.exploracion_soplo_carotideo || data.exploracion_estenosis_aortica) && (
                                                     <span style={{ backgroundColor: '#fee2e2', color: '#991b1b', fontSize: '8px', fontWeight: 'bold', padding: '3px 8px', border: '1px solid #fecaca', borderRadius: '4px', whiteSpace: 'nowrap' }}>
-                                                        ⚠️ HALLAZGOS DE ALTO RIESGO
+                                                        HALLAZGOS DE ALTO RIESGO
                                                     </span>
                                                 )}
                                             </td>
@@ -548,7 +548,7 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
                     {printedAlerts.length > 0 && (
                         <div style={{ marginTop: '14px', border: '1.5px solid #b91c1c', borderRadius: '4px', overflow: 'hidden', pageBreakInside: 'avoid' }}>
                             <div style={{ backgroundColor: '#b91c1c', color: 'white', fontSize: '9px', fontWeight: 'bold', padding: '4px 10px', letterSpacing: '0.08em' }}>
-                                ⚠️ ALERTAS CLÍNICAS ACTIVAS (ECG / VITALES / LABORATORIOS / EXPLORACIÓN FÍSICA)
+                                ALERTAS CLÍNICAS ACTIVAS (ECG / VITALES / LABORATORIOS / EXPLORACIÓN FÍSICA)
                             </div>
                             <div style={{ padding: '8px 10px', backgroundColor: '#fff5f5' }}>
                                 <ul style={{ margin: 0, paddingLeft: '14px', fontSize: '8.5px', color: '#7f1d1d', lineHeight: '1.5' }}>

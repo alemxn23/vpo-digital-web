@@ -154,7 +154,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         const isAmbulatory = data.capA_cxMenor;
 
         // 1. SAFETY RULE: NO SYNTHETIC COLLOIDS
-        const safetyWarning = "⚠️ KDIGO 2024: Uso de Coloides Sintéticos (HES/Voluven) CONTRAINDICADO (Riesgo AKI/Mortalidad).";
+        const safetyWarning = "KDIGO 2024: Uso de Coloides Sintéticos (HES/Voluven) CONTRAINDICADO (Riesgo AKI/Mortalidad).";
 
         let strategy = "";
 
@@ -225,7 +225,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
 
         // DUKE ALERT IN PLAN
         const dukeAlert = (data.duke_resultado === 'Definitivo' || data.duke_resultado === 'Posible')
-            ? "\n\n⚠️ ALERTA INFECTOLOGÍA: Riesgo de Endocarditis (Duke +). Se sugiere diferir procedimiento electivo, hemocultivos y ETE."
+            ? "\n\nALERTA INFECTOLOGÍA: Riesgo de Endocarditis (Duke +). Se sugiere diferir procedimiento electivo, hemocultivos y ETE."
             : "";
 
         // NSAID BLOCKER LOGIC (TFG < 30)
@@ -240,30 +240,30 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         // Frailty Alert
         const frailtyScore = data.fragilidad_score || 1;
         const frailtyRec = frailtyScore >= 5
-            ? "\n\n⚠️ FRAGILIDAD (CFS >= 5): Protocolo de prevención de Delirio y manejo geriátrico temprano sugerido."
+            ? "\n\nFRAGILIDAD (CFS >= 5): Protocolo de prevención de Delirio y manejo geriátrico temprano sugerido."
             : "";
 
         // STOP-BANG Alert (High Risk)
         const stopBangRec = (data.stopbang_risk === 'Alto' || data.stopbang_risk === 'Alto (Dx Previo)')
-            ? "\n\n⚠️ VÍA AÉREA (STOP-BANG ALTO): Se sugiere extubación despierto y monitoreo de oximetría continua postoperatoria por alta probabilidad de SAOS."
+            ? "\n\nVÍA AÉREA (STOP-BANG ALTO): Se sugiere extubación despierto y monitoreo de oximetría continua postoperatoria por alta probabilidad de SAOS."
             : "";
 
         // Fasting & CHO Logic (SAMBA 2024)
         const isDiabetic = data.diabetes;
         const fastingRule = isDiabetic
-            ? "• Ayuno: Sólidos 6h. Líquidos claros (AGUA) hasta 2h previas.\n• ⚠️ DIABETES: EVITAR cargas de Carbohidratos/Maltodextrina (SAMBA 2024: Riesgo de Hiperglucemia/Variabilidad)."
+            ? "• Ayuno: Sólidos 6h. Líquidos claros (AGUA) hasta 2h previas.\n• DIABETES: EVITAR cargas de Carbohidratos/Maltodextrina (SAMBA 2024: Riesgo de Hiperglucemia/Variabilidad)."
             : "• Ayuno: Sólidos 6h. Líquidos claros hasta 2h previas.\n• Carga CHO: Maltodextrina recomendada 2h antes (Reduce resistencia a insulina).";
 
         // NSQIP High Risk Alert
         const nsqipAlert = (data.nsqip_total || 0) >= 10
-            ? `\n\n⚠️ NSQIP ALTO (${data.nsqip_total}%): Riesgo elevado de complicación quirúrgica mayor a 30 días. Se recomienda optimización de comorbilidades antes de proceder.`
+            ? `\n\nNSQIP ALTO (${data.nsqip_total}%): Riesgo elevado de complicación quirúrgica mayor a 30 días. Se recomienda optimización de comorbilidades antes de proceder.`
             : (data.nsqip_total || 0) >= 3
                 ? `\n• NSQIP Moderado (${data.nsqip_total}%): Riesgo de complicación mayor. Estratificar y documentar consentimiento informado ampliado.`
                 : "";
 
         // Urgency Alert
         const urgencyAlert = data.esUrgencia
-            ? `\n\n⚠️ CIRUGÍA DE URGENCIA / EMERGENCIA:
+            ? `\n\nCIRUGÍA DE URGENCIA / EMERGENCIA:
 • Tipo de procedimiento: URGENCIA (Impacto en escalas: +4 Goldman, +10 Detsky, +8 ARISCAT, ASA-E).
 • Ayuno no garantizado: Considerar técnica de secuencia rápida (IRS) si estómago lleno.
 • Optimización preoperatoria limitada: Priorizar estabilidad hemodinámica sobre metas absolutas.
@@ -297,7 +297,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         }
 
         if (parts.length === 0) return "";
-        return "\n\n⚠️ SUGERENCIAS ECOCARDIOGRÁFICAS:\n• " + parts.join("\n• ");
+        return "\n\nSUGERENCIAS ECOCARDIOGRÁFICAS:\n• " + parts.join("\n• ");
     };
 
     const generateTransPlan = () => {
@@ -369,29 +369,29 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
 
         // ---- ECG FINDINGS ----
         if (data.ecg_isquemia) {
-            alerts.push("⚡ ECG: Isquemia/Necrosis activa detectada. Considerar interconsulta a Cardiología y optimizar tratamiento antiisquémico previo a procedimiento electivo.");
+            alerts.push("ECG: Isquemia/Necrosis activa detectada. Considerar interconsulta a Cardiología y optimizar tratamiento antiisquémico previo a procedimiento electivo.");
         }
         if (data.ecg_brihh_completo) {
-            alerts.push("⚡ ECG: BRIHH Completo. Sugiere cardiopatía estructural subyacente. Vigilar intraoperatoriamente. Alto riesgo de bloqueo completo con manejo de catéter.");
+            alerts.push("ECG: BRIHH Completo. Sugiere cardiopatía estructural subyacente. Vigilar intraoperatoriamente. Alto riesgo de bloqueo completo con manejo de catéter.");
         }
         if (data.ecg_extrasistoles) {
-            alerts.push("⚡ ECG: >5 Extrasístoles Ventriculares/min (+7 Goldman). Optimizar manejo electrolítico (K+, Mg²⁺) perioperatorio.");
+            alerts.push("ECG: >5 Extrasístoles Ventriculares/min (+7 Goldman). Optimizar manejo electrolítico (K+, Mg²⁺) perioperatorio.");
         }
         if (data.ecg_ritmo_especifico === 'FA') {
-            alerts.push("⚡ ECG: Fibrilación Auricular. Verificar anticoagulación. Control de FC meta <100 lpm. Valorar CHA₂DS₂-VASc para riesgo embólico.");
+            alerts.push("ECG: Fibrilación Auricular. Verificar anticoagulación. Control de FC meta <100 lpm. Valorar CHA₂DS₂-VASc para riesgo embólico.");
         } else if (data.ecg_ritmo_especifico === 'Flutter') {
-            alerts.push("⚡ ECG: Flutter Auricular. Riesgo de conversión 1:1 y deterioro hemodinámico en estrés perioperatorio. Control de FC estricto.");
+            alerts.push("ECG: Flutter Auricular. Riesgo de conversión 1:1 y deterioro hemodinámico en estrés perioperatorio. Control de FC estricto.");
         } else if (data.ecg_ritmo_especifico === 'Marcapasos') {
-            alerts.push("⚡ ECG: Ritmo de Marcapasos. Verificar tipo (DDD/VVI) y programación. Usar bisturí bipolar o evitar electrocauterio monopolar. Tener imán disponible.");
+            alerts.push("ECG: Ritmo de Marcapasos. Verificar tipo (DDD/VVI) y programación. Usar bisturí bipolar o evitar electrocauterio monopolar. Tener imán disponible.");
         }
         if (data.ecg_bloqueo === 'Mobitz_II') {
-            alerts.push("⚡ ECG: Bloqueo AV Mobitz II (+5 Detsky). Alto riesgo de progresión a bloqueo completo. Valorar marcapasos temporal de precaución con Cardiología.");
+            alerts.push("ECG: Bloqueo AV Mobitz II (+5 Detsky). Alto riesgo de progresión a bloqueo completo. Valorar marcapasos temporal de precaución con Cardiología.");
         }
         if (data.ecg_bloqueo === '3er_Grado') {
-            alerts.push("⚡ ECG: Bloqueo AV Completo (3er Grado). Requiere marcapasos temporal definitivo antes de proceder a cirugía electiva.");
+            alerts.push("ECG: Bloqueo AV Completo (3er Grado). Requiere marcapasos temporal definitivo antes de proceder a cirugía electiva.");
         }
         if (data.ecg_hvi) {
-            alerts.push("⚡ ECG: HVI (Hipertrofia Ventricular Izquierda). Marcador de HTA crónica severa. Se apoya ASA III. Metas de TA estrictas.");
+            alerts.push("ECG: HVI (Hipertrofia Ventricular Izquierda). Marcador de HTA crónica severa. Se apoya ASA III. Metas de TA estrictas.");
         }
 
         // ---- SIGNOS VITALES CRÍTICOS ----
@@ -400,22 +400,22 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         const sato2 = data.sato2 || 0;
         const fr = data.fr || 0;
         if (sys > 180) {
-            alerts.push(`⚠️ HTA Severa (${sys} mmHg): Se recomienda optimización del control tensional antes del procedimiento electivo. Meta: <160 mmHg para reducir riesgo cardiovascular perioperatorio.`);
+            alerts.push(`HTA Severa (${sys} mmHg): Se recomienda optimización del control tensional antes del procedimiento electivo. Meta: <160 mmHg para reducir riesgo cardiovascular perioperatorio.`);
         } else if (sys > 160) {
-            alerts.push(`⚠️ HTA Grado II (${sys} mmHg): Control presión arterial preoperatorio recomendado. Meta perioperatoria: <140 mmHg.`);
+            alerts.push(`HTA Grado II (${sys} mmHg): Control presión arterial preoperatorio recomendado. Meta perioperatoria: <140 mmHg.`);
         }
         if (fc > 100) {
-            alerts.push(`⚠️ Taquicardia (${fc} lpm): Investigar causa (fiebre, dolor, hipovolemia, anemia, FA). Control de FC perioperatorio. Meta: <100 lpm en reposo.`);
+            alerts.push(`Taquicardia (${fc} lpm): Investigar causa (fiebre, dolor, hipovolemia, anemia, FA). Control de FC perioperatorio. Meta: <100 lpm en reposo.`);
         } else if (fc < 50) {
-            alerts.push(`⚠️ Bradicardia (${fc} lpm): Vigilar en contexto de medicamentos (betabloqueadores). Tener atropina disponible.`);
+            alerts.push(`Bradicardia (${fc} lpm): Vigilar en contexto de medicamentos (betabloqueadores). Tener atropina disponible.`);
         }
         if (sato2 > 0 && sato2 < 90) {
-            alerts.push(`⚠️ Hipoxemia Severa (SpO2 ${sato2}%): Optimizar función respiratoria antes del procedimiento. Considerar O2 suplementario, espirometría incentiva, fisioterapia pulmonar.`);
+            alerts.push(`Hipoxemia Severa (SpO2 ${sato2}%): Optimizar función respiratoria antes del procedimiento. Considerar O2 suplementario, espirometría incentiva, fisioterapia pulmonar.`);
         } else if (sato2 > 0 && sato2 < 94) {
-            alerts.push(`⚠️ SpO2 Limítrofe (${sato2}%): Vigilar oxigenación perioperatoria. Monitoreo continuo de pulsioximetría recomendado.`);
+            alerts.push(`SpO2 Limítrofe (${sato2}%): Vigilar oxigenación perioperatoria. Monitoreo continuo de pulsioximetría recomendado.`);
         }
         if (fr > 20) {
-            alerts.push(`⚠️ Taquipnea (${fr} rpm): Considerar causa subyacente (descompensación cardiaca, neumónica, ansiedad). Valorar si es seguro proceder.`);
+            alerts.push(`Taquipnea (${fr} rpm): Considerar causa subyacente (descompensación cardiaca, neumónica, ansiedad). Valorar si es seguro proceder.`);
         }
 
         // ---- LABORATORIOS CRÍTICOS ----
@@ -425,37 +425,37 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         const hb = data.hb || 0;
         const plaq = data.plaquetas || 0;
         if (k > 0 && k < 3.0) {
-            alerts.push(`⚠️ Hipocalemia (K⁺ ${k} mEq/L): Corregir electrolitos previo a cirugía. Riesgo de arritmias perioperatorias. Meta: K⁺ > 3.5 mEq/L.`);
+            alerts.push(`Hipocalemia (K⁺ ${k} mEq/L): Corregir electrolitos previo a cirugía. Riesgo de arritmias perioperatorias. Meta: K⁺ > 3.5 mEq/L.`);
         } else if (k > 0 && k > 5.5) {
-            alerts.push(`⚠️ Hipercalemia (K⁺ ${k} mEq/L): Riesgo de bloqueo AV y fibrilación ventricular. Corregir antes del procedimiento electivo.`);
+            alerts.push(`Hipercalemia (K⁺ ${k} mEq/L): Riesgo de bloqueo AV y fibrilación ventricular. Corregir antes del procedimiento electivo.`);
         }
         if (na > 0 && na < 130) {
-            alerts.push(`⚠️ Hiponatremia (Na⁺ ${na} mEq/L): Riesgo de edema cerebral y convulsiones perioperatorias. Corregir lentamente (<8 mEq/L/24h). Sodio Isotónico.`);
+            alerts.push(`Hiponatremia (Na⁺ ${na} mEq/L): Riesgo de edema cerebral y convulsiones perioperatorias. Corregir lentamente (<8 mEq/L/24h). Sodio Isotónico.`);
         } else if (na > 0 && na > 150) {
-            alerts.push(`⚠️ Hipernatremia (Na⁺ ${na} mEq/L): Corrección con agua libre calculada. Retrasar cirugía electiva hasta Na⁺ < 145 mEq/L.`);
+            alerts.push(`Hipernatremia (Na⁺ ${na} mEq/L): Corrección con agua libre calculada. Retrasar cirugía electiva hasta Na⁺ < 145 mEq/L.`);
         }
         if (cr > 3.0) {
-            alerts.push(`⚠️ Daño Renal (Cr ${cr} mg/dL): Alto riesgo de LRA perioperatoria. Optimizar hidratación. Ajustar dosis de medicamentos nefrotóxicos. Evitar contraste IV y AINEs.`);
+            alerts.push(`Daño Renal (Cr ${cr} mg/dL): Alto riesgo de LRA perioperatoria. Optimizar hidratación. Ajustar dosis de medicamentos nefrotóxicos. Evitar contraste IV y AINEs.`);
         }
         if (hb > 0 && hb < 8.0) {
-            alerts.push(`⚠️ Anemia Severa (Hb ${hb} g/dL): Optimizar reservas. Considerar hierro IV, EPO si hay tiempo. En cirugía urgente: transfundir previo si Hb < 7.0 g/dL (o <8 en cardiopatía).`);
+            alerts.push(`Anemia Severa (Hb ${hb} g/dL): Optimizar reservas. Considerar hierro IV, EPO si hay tiempo. En cirugía urgente: transfundir previo si Hb < 7.0 g/dL (o <8 en cardiopatía).`);
         }
         if (plaq > 0 && plaq < 100) {
-            alerts.push(`⚠️ Trombocitopenia (Plaq ${plaq} k/μL): Riesgo hemorrágico elevado. Transfundir plaquetas si <50k (cirugía mayor) o <20k (profiláctico). Valorar riesgo/beneficio.`);
+            alerts.push(`Trombocitopenia (Plaq ${plaq} k/μL): Riesgo hemorrágico elevado. Transfundir plaquetas si <50k (cirugía mayor) o <20k (profiláctico). Valorar riesgo/beneficio.`);
         }
 
         // ---- HALLAZGOS FÍSICOS ----
         if (data.exploracion_estenosis_aortica || data.flag_estenosis_aortica_severa) {
-            alerts.push("🩺 ESTENOSIS AÓRTICA SEVERA: Mantener precarga y RVS. Evitar hipotensión brusca y taquicardia. La anestesia neuroaxial puede precipitar colapso hemodinámico.");
+            alerts.push("ESTENOSIS AÓRTICA SEVERA: Mantener precarga y RVS. Evitar hipotensión brusca y taquicardia. La anestesia neuroaxial puede precipitar colapso hemodinámico.");
         }
         if (data.exploracion_soplo_carotideo) {
-            alerts.push("🩺 Soplo Carotídeo: Riesgo de EVC perioperatorio aumentado. Mantener PAM dentro del 20% de la basal. Evitar hipotensión. Considerar dúplex carotídeo si no se ha realizado.");
+            alerts.push("Soplo Carotídeo: Riesgo de EVC perioperatorio aumentado. Mantener PAM dentro del 20% de la basal. Evitar hipotensión. Considerar dúplex carotídeo si no se ha realizado.");
         }
         if (data.exploracion_s3 || (data.icc && data.icc_evolucion === 'aguda')) {
-            alerts.push("🩺 Signos de ICC Aguda (S3/Estertores/Ingurgitación): Optimizar hemodinámicamente antes del procedimiento. Balance hídrico negativo guiado por metas. Considerar diferir cirugía electiva.");
+            alerts.push("Signos de ICC Aguda (S3/Estertores/Ingurgitación): Optimizar hemodinámicamente antes del procedimiento. Balance hídrico negativo guiado por metas. Considerar diferir cirugía electiva.");
         }
         if (data.exploracion_edema) {
-            alerts.push("🩺 Edema de Miembros Inferiores: Vigilar trombosis venosa profunda. Verificar tromboprofilaxis. Elevación de extremidades. Caprini +1.");
+            alerts.push("Edema de Miembros Inferiores: Vigilar trombosis venosa profunda. Verificar tromboprofilaxis. Elevación de extremidades. Caprini +1.");
         }
 
         if (alerts.length === 0) return "";
