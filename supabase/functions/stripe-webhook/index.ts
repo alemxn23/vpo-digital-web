@@ -55,19 +55,14 @@ serve(async (req) => {
                 creditsToAdd = Number(session.metadata.credits);
             }
 
-            // Método B: inferir créditos desde los line items (Payment Links)
-            if (creditsToAdd === 0) {
-                try {
-                    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-                    for (const item of lineItems.data) {
-                        const priceId = item.price?.id;
-                        if (priceId && PRICE_CREDITS_MAP[priceId]) {
-                            creditsToAdd += PRICE_CREDITS_MAP[priceId] * (item.quantity || 1);
-                        }
-                    }
-                } catch (e: any) {
-                    console.error('Error fetching line items:', e.message);
+            // Método B: inferir créditos usando el ID del Payment Link de Stripe
+            if (creditsToAdd === 0 && session.payment_link) {
+                if (session.payment_link === 'plink_1T4LFiKtp6JiUcWzp5T7cvcr') {
+                    creditsToAdd = 5;
+                } else if (session.payment_link === 'plink_1T4LGRKtp6JiUcWzBpFj6ox1') {
+                    creditsToAdd = 10;
                 }
+                console.log(`Resolved ${creditsToAdd} credits from Payment Link: ${session.payment_link}`);
             }
 
             if (creditsToAdd === 0) {
