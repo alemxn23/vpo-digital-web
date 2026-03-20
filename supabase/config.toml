@@ -38,5 +38,3 @@ enable_signup = true
 enable_anonymous_sign_ins = false
 enable_manual_linking = false
 
-[functions]
-verify_jwt = false
