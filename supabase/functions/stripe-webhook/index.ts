@@ -23,10 +23,10 @@ serve(async (req) => {
     try {
         const body = await req.text()
 
-        // Validar firma del webhook
+        // Validar firma del webhook (Deno requiere la versión Async para Web Crypto)
         let event;
         try {
-            event = stripe.webhooks.constructEvent(body, signature, stripeWebhookSecret);
+            event = await stripe.webhooks.constructEventAsync(body, signature, stripeWebhookSecret);
         } catch (err: any) {
             console.error(`Webhook signature verification failed:`, err.message);
             return new Response(err.message, { status: 400 });
