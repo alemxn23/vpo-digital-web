@@ -494,7 +494,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
         // Physical Findings
         data.exploracion_s3, data.exploracion_estenosis_aortica, data.exploracion_soplo_carotideo, data.exploracion_edema,
         // Meds & Urgency
-        selectedMeds, data.esUrgencia,
+        JSON.stringify(selectedMeds), data.esUrgencia,
         // Other
         data.stopbang_risk, data.fragilidad_score, data.edad, data.imc, data.peso,
         data.alergicos, data.alergicosDetalle, data.capB_cxMayor, data.capB_laparoscopia, data.capA_cxMenor,

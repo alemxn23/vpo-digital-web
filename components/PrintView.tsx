@@ -520,7 +520,7 @@ const PrintView: React.FC<{ isPrintMode?: boolean }> = ({ isPrintMode }) => {
                 <div style={{ marginTop: '10px' }}>
                     <div style={{ fontWeight: 'bold', fontSize: '10px', textAlign: 'center', backgroundColor: '#eee', padding: '8px', border: '1px solid black', marginBottom: '12px' }}>PRE-QUIRÚRGICO</div>
                     <div style={{ fontSize: '9px', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>
-                        {data.plan_pre?.split('--- CONCILIACIÓN DE FÁRMACOS ---')[0].trim()}
+                        {data.plan_pre}
                     </div>
                     {data.selectedMeds && data.selectedMeds.length > 0 && (
                         <div style={{ marginTop: '10px', borderTop: '1px dashed #ccc', paddingTop: '5px', fontSize: '9px' }}>
