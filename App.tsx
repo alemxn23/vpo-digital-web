@@ -900,8 +900,10 @@ const App: React.FC = () => {
                       </>
                     )}
 
-                    <div className={`transform scale-[0.4] sm:scale-[0.6] lg:scale-[0.85] xl:scale-[0.95] origin-top transition-all duration-700 ${!isUnlocked ? 'blur-[5px] select-none pointer-events-none' : 'blur-0'}`} style={{ minHeight: '100%' }}>
-                      <PrintView />
+                    <div className="w-full flex justify-center overflow-x-hidden">
+                      <div className={`w-[794px] shrink-0 transform scale-[0.4] sm:scale-[0.6] lg:scale-[0.85] xl:scale-[0.95] origin-top transition-all duration-700 ${!isUnlocked ? 'blur-[5px] select-none pointer-events-none' : 'blur-0'}`} style={{ minHeight: '100%' }}>
+                        <PrintView />
+                      </div>
                     </div>
                   </div>
 
