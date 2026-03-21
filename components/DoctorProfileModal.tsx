@@ -130,14 +130,7 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
         reader.readAsDataURL(file);
     };
 
-    const dataUrlToBlob = (dataUrl: string): Blob => {
-        const arr = dataUrl.split(',');
-        const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
-        const bstr = atob(arr[1]);
-        const u8arr = new Uint8Array(bstr.length);
-        for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
-        return new Blob([u8arr], { type: mime });
-    };
+    // Eliminado dataUrlToBlob, usamos fetch nativo rescindiendo funciones lentas y propensas a error
 
     const handleSubmit = async () => {
         if (!supabase) return setError('Servicio no disponible.');
@@ -153,26 +146,40 @@ export const DoctorProfileModal: React.FC<DoctorProfileModalProps> = ({
             const ts = Date.now();
 
             // 1. Upload selfie
-            const selfieBlob = dataUrlToBlob(selfieDataUrl);
+            const selfieReq = await fetch(selfieDataUrl);
+            const selfieBlob = await selfieReq.blob();
+            const selfiePath = `${userId}/selfie_${ts}.jpg`;
+
             const { error: selfieErr } = await supabase.storage
                 .from('ine-comprobantes')
-                .upload(`${userId}/selfie_${ts}.jpg`, selfieBlob, { contentType: 'image/jpeg', upsert: true });
+                .upload(selfiePath, selfieBlob, { contentType: 'image/jpeg', upsert: true });
             if (selfieErr) throw selfieErr;
-            const { data: selfieData } = supabase.storage.from('ine-comprobantes').getPublicUrl(`${userId}/selfie_${ts}.jpg`);
+
+            // Creamos una URL firmada de 1 año para que el admin la pueda abrir, ya que el bucket debe ser Privado.
+            const { data: selfieData, error: selfieSignErr } = await supabase.storage
+                .from('ine-comprobantes')
+                .createSignedUrl(selfiePath, 60 * 60 * 24 * 365);
+            if (selfieSignErr) throw selfieSignErr;
 
             // 2. Upload INE
             const ineExt = ineFile.name.split('.').pop() || 'jpg';
+            const inePath = `${userId}/ine_${ts}.${ineExt}`;
+
             const { error: ineErr } = await supabase.storage
                 .from('ine-comprobantes')
-                .upload(`${userId}/ine_${ts}.${ineExt}`, ineFile, { contentType: ineFile.type, upsert: true });
+                .upload(inePath, ineFile, { contentType: ineFile.type, upsert: true });
             if (ineErr) throw ineErr;
-            const { data: ineData } = supabase.storage.from('ine-comprobantes').getPublicUrl(`${userId}/ine_${ts}.${ineExt}`);
+
+            const { data: ineData, error: ineSignErr } = await supabase.storage
+                .from('ine-comprobantes')
+                .createSignedUrl(inePath, 60 * 60 * 24 * 365);
+            if (ineSignErr) throw ineSignErr;
 
             // 3. Update profile
             const profileUpdates: any = {
                 verification_status: 'pending',
-                ine_url: ineData?.publicUrl || null,
-                selfie_url: selfieData?.publicUrl || null,
+                ine_url: ineData?.signedUrl || null,
+                selfie_url: selfieData?.signedUrl || null,
             };
             if (nameInput) profileUpdates.full_name = nameInput.trim();
             if (cedulaInput) profileUpdates.cedula_profesional = cedulaInput.trim();
