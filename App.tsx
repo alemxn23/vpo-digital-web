@@ -857,32 +857,11 @@ const App: React.FC = () => {
                     : `⚠️ ¿Registrar nuevo paciente?\n\nEsta acción borrará todos los datos del paciente actual.\nCréditos disponibles: ${remaining} VPO${remaining !== 1 ? 's' : ''}`;
                   if (confirm(msg)) {
                     localStorage.removeItem('vpo_current_data');
-                    methods.reset({
-                      fecha: new Date().toISOString().split('T')[0],
-                      hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                      unidadMedica: methods.getValues('unidadMedica'),
-                      servicioSolicitante: methods.getValues('servicioSolicitante'),
-                      elaboro: methods.getValues('elaboro'),
-                      matricula: methods.getValues('matricula'),
-                      paid_credits_live: paidCredits,
-                      free_vpos_used_today_live: freeUsed,
-                      is_vip_live: isVIP,
-                      tipoCirugia: 'Electiva',
-                      esUrgencia: false,
-                      genero: Gender.MALE,
-                      ritmo: 'SINSUSAL',
-                      asa: 'II', lee: 'I',
-                      mets_estimated: 4, mets_method: 'auto',
-                      khorana_total: 0, vienna_cats_total: 0,
-                      ariscat_total: 0, caprini: 3,
-                      goldman: 'I', detsky: 'I',
-                      gupta: 0.1, cha2ds2vasc: 0,
-                      hasbled: 0, fragilidad_score: 1,
-                      stopbang_total: 0, cancer_activo: false
-                    });
-                    setIsUnlocked(isVIP);
-                    setActiveStep(0);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Provide a slight delay so the user sees the confirmation before reload
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 100);
                   }
                 }} />
               </div>
