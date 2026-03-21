@@ -591,100 +591,103 @@ const Recommendations: React.FC<RecommendationsProps> = ({ isUnlocked = false, o
                     {(() => {
                         const targets = getGlobalTargets();
                         return (
-                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-medium text-slate-400 mb-0.5">Indicadores</span>
-                                    <h4 className="text-[13px] font-semibold text-slate-800">Metas Globales</h4>
+                            <div className="flex flex-col md:flex-row md:items-center gap-4 lg:gap-8 bg-slate-50/40 p-3.5 rounded-xl border border-slate-100/60 shadow-sm">
+                                <div className="flex flex-col shrink-0">
+                                    <span className="text-[10px] font-bold text-slate-400 mb-0.5 uppercase tracking-widest">Indicadores</span>
+                                    <h4 className="text-[13px] font-bold text-slate-800">Metas Globales</h4>
                                 </div>
 
-                                <div className="h-8 w-px bg-slate-200 hidden lg:block" />
+                                <div className="h-8 w-px bg-slate-200 hidden md:block" />
 
-                                {/* BP Indicator */}
-                                <div
-                                    onClick={() => setSelectedGoal('bp')}
-                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                                >
-                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.bp.isOk ? 'bg-emerald-50 border-emerald-200 text-emerald-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
-                                        <Activity size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Tensión Arterial</span>
-                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
-                                        </div>
-                                        <div className="flex items-baseline gap-1.5">
-                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.bp.label}</span>
-                                            {targets.bp.current.sys > 0 && (
-                                                <span className={`text-[10px] font-semibold ${targets.bp.isOk ? 'text-emerald-500' : 'text-red-500'}`}>
-                                                    (Real: {targets.bp.current.sys}/{targets.bp.current.dia})
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row lg:flex-wrap gap-4 w-full">
 
-                                {/* Glucose Indicator */}
-                                <div
-                                    onClick={() => setSelectedGoal('glu')}
-                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                                >
-                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.glu.isOk ? 'bg-blue-50 border-blue-200 text-blue-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
-                                        <Syringe size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Glucosa Central</span>
-                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                    {/* BP Indicator */}
+                                    <div
+                                        onClick={() => setSelectedGoal('bp')}
+                                        className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                    >
+                                        <div className={`p-1.5 rounded-lg border transition-colors ${targets.bp.isOk ? 'bg-emerald-50 border-emerald-200 text-emerald-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
+                                            <Activity size={16} />
                                         </div>
-                                        <div className="flex items-baseline gap-1.5">
-                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.glu.label}</span>
-                                            {targets.glu.current > 0 && (
-                                                <span className={`text-[10px] font-semibold ${targets.glu.isOk ? 'text-blue-500' : 'text-red-500'}`}>
-                                                    (Real: {targets.glu.current})
-                                                </span>
-                                            )}
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="text-[10px] font-medium text-slate-400 leading-none">Tensión Arterial</span>
+                                                <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                            </div>
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.bp.label}</span>
+                                                {targets.bp.current.sys > 0 && (
+                                                    <span className={`text-[10px] font-semibold ${targets.bp.isOk ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                        (Real: {targets.bp.current.sys}/{targets.bp.current.dia})
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Hemoglobin Indicator */}
-                                <div
-                                    onClick={() => setSelectedGoal('hb')}
-                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                                >
-                                    <div className={`p-1.5 rounded-lg border transition-colors ${targets.hb.isOk ? 'bg-rose-50 border-rose-200 text-rose-500' : 'bg-orange-50 border-orange-200 text-orange-500'}`}>
-                                        <HeartPulse size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Hemoglobina (Target)</span>
-                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                    {/* Glucose Indicator */}
+                                    <div
+                                        onClick={() => setSelectedGoal('glu')}
+                                        className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                    >
+                                        <div className={`p-1.5 rounded-lg border transition-colors ${targets.glu.isOk ? 'bg-blue-50 border-blue-200 text-blue-500' : 'bg-red-50 border-red-200 text-red-500'}`}>
+                                            <Syringe size={16} />
                                         </div>
-                                        <div className="flex items-baseline gap-1.5">
-                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.hb.label}</span>
-                                            {targets.hb.current > 0 && (
-                                                <span className={`text-[10px] font-semibold ${targets.hb.isOk ? 'text-slate-500' : 'text-red-500 animate-pulse'}`}>
-                                                    (Real: {targets.hb.current})
-                                                </span>
-                                            )}
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="text-[10px] font-medium text-slate-400 leading-none">Glucosa Central</span>
+                                                <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                            </div>
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.glu.label}</span>
+                                                {targets.glu.current > 0 && (
+                                                    <span className={`text-[10px] font-semibold ${targets.glu.isOk ? 'text-blue-500' : 'text-red-500'}`}>
+                                                        (Real: {targets.glu.current})
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Uresis Indicator */}
-                                <div
-                                    onClick={() => setSelectedGoal('uresis')}
-                                    className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
-                                >
-                                    <div className="bg-cyan-50 p-1.5 rounded-lg border border-cyan-200 text-cyan-500">
-                                        <Droplets size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <span className="text-[10px] font-medium text-slate-400 leading-none">Uresis (Gasto)</span>
-                                            <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                    {/* Hemoglobin Indicator */}
+                                    <div
+                                        onClick={() => setSelectedGoal('hb')}
+                                        className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                    >
+                                        <div className={`p-1.5 rounded-lg border transition-colors ${targets.hb.isOk ? 'bg-rose-50 border-rose-200 text-rose-500' : 'bg-orange-50 border-orange-200 text-orange-500'}`}>
+                                            <HeartPulse size={16} />
                                         </div>
-                                        <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">≥ 0.5 <span className="text-[10px] text-slate-400 font-medium ml-1">ml/kg/h</span></span>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="text-[10px] font-medium text-slate-400 leading-none">Hemoglobina (Target)</span>
+                                                <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                            </div>
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">{targets.hb.label}</span>
+                                                {targets.hb.current > 0 && (
+                                                    <span className={`text-[10px] font-semibold ${targets.hb.isOk ? 'text-slate-500' : 'text-red-500 animate-pulse'}`}>
+                                                        (Real: {targets.hb.current})
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Uresis Indicator */}
+                                    <div
+                                        onClick={() => setSelectedGoal('uresis')}
+                                        className="flex items-center gap-3 group transition-all hover:scale-105 cursor-help"
+                                    >
+                                        <div className="bg-cyan-50 p-1.5 rounded-lg border border-cyan-200 text-cyan-500">
+                                            <Droplets size={16} />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="text-[10px] font-medium text-slate-400 leading-none">Uresis (Gasto)</span>
+                                                <Info size={8} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+                                            </div>
+                                            <span className="text-[13px] font-semibold text-slate-800 leading-none tabular-nums">≥ 0.5 <span className="text-[10px] text-slate-400 font-medium ml-1">ml/kg/h</span></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

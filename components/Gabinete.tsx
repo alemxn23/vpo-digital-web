@@ -192,7 +192,7 @@ const Gabinete: React.FC = () => {
                             setDragActive={setDragActiveRx}
                         />
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Field label="Fecha RX">
                                 <input type="date" {...register('rx_fecha')} className={inputClass} />
                             </Field>

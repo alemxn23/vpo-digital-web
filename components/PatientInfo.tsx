@@ -124,7 +124,7 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ isLocked = false, onNewPatien
               <input {...register('nombre')} className={inputClass} placeholder="Apellido Nombre" />
             </Field>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Fecha de nacimiento" icon={<Calendar size={11} strokeWidth={1.5} className="text-cyan-500" />}>
                 <input type="date" {...register('fechaNacimiento')} className={inputClass} />
               </Field>
