@@ -281,7 +281,7 @@ const Gabinete: React.FC = () => {
                             maxH="max-h-36"
                         />
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Field label="Fecha ECG">
                                 <input type="date" {...register('ecg_fecha')} className={inputClass} />
                             </Field>
@@ -290,7 +290,7 @@ const Gabinete: React.FC = () => {
                             </Field>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Field label="Ritmo">
                                 <select {...register('ecg_ritmo_especifico')} className={selectClass}>
                                     <option value="Sinusal">Sinusal</option>
